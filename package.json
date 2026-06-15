@@ -1,7 +1,7 @@
 {
-  "name": "statushub",
+  "name": "upcheck",
   "version": "1.0.0",
-  "description": "Cross-platform desktop status hub for operational services",
+  "description": "Cross-platform desktop app for monitoring service status",
   "main": "electron/main.js",
   "scripts": {
     "dev": "vite",
@@ -31,8 +31,8 @@
     "wait-on": "^8.0.1"
   },
   "build": {
-    "appId": "com.statushub.app",
-    "productName": "StatusHub",
+    "appId": "com.upcheck.app",
+    "productName": "UpCheck",
     "files": [
       "dist/**/*",
       "electron/**/*",

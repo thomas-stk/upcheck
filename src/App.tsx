@@ -13,7 +13,7 @@ export default function App() {
         fontSize: '1.1rem',
       }}
     >
-      StatusHub is alive
+      UpCheck is alive
     </div>
   )
 }
