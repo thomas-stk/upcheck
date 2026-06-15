@@ -1,28 +1,38 @@
 @import "tailwindcss";
 
-/*
-  Tailwind v4 uses @theme instead of tailwind.config.js.
-  Every CSS variable defined here becomes a Tailwind utility automatically:
-  --color-bg-base  →  bg-bg-base, text-bg-base, border-bg-base, etc.
-  --font-sans      →  font-sans
-*/
 @theme {
-  --color-bg-base: #111110;
-  --color-bg-surface: #1a1a18;
-  --color-bg-raised: #222220;
-  --color-bg-hover: #2a2a28;
+  --color-bg-base:    #111216;
+  --color-bg-surface: #16181e;
+  --color-bg-card:    rgba(255,255,255,0.03);
 
-  --color-status-operational: #5a9e4e;
-  --color-status-degraded: #b08030;
-  --color-status-outage: #b04040;
-  --color-status-unknown: #555555;
+  --color-status-operational: #4ade80;
+  --color-status-degraded:    #fbbf24;
+  --color-status-outage:      #f87171;
 
-  --color-text-primary: #e8e8e6;
-  --color-text-muted: #888884;
-  --color-text-faint: #555552;
+  --color-accent: #818cf8;
 
-  --font-sans: 'DM Sans', sans-serif;
-  --font-serif: 'DM Serif Display', serif;
+  --color-text-primary:   rgba(255,255,255,0.85);
+  --color-text-secondary: rgba(255,255,255,0.35);
+  --color-text-muted:     rgba(255,255,255,0.18);
+
+  --font-sans: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+
+  --color-white-3:  rgba(255,255,255,0.03);
+  --color-white-4:  rgba(255,255,255,0.04);
+  --color-white-5:  rgba(255,255,255,0.05);
+  --color-white-6:  rgba(255,255,255,0.06);
+  --color-white-8:  rgba(255,255,255,0.08);
+  --color-white-10: rgba(255,255,255,0.1);
+  --color-white-12: rgba(255,255,255,0.12);
+  --color-white-15: rgba(255,255,255,0.15);
+  --color-white-20: rgba(255,255,255,0.2);
+  --color-white-25: rgba(255,255,255,0.25);
+  --color-white-30: rgba(255,255,255,0.3);
+  --color-white-35: rgba(255,255,255,0.35);
+  --color-white-40: rgba(255,255,255,0.4);
+  --color-white-75: rgba(255,255,255,0.75);
+  --color-white-80: rgba(255,255,255,0.8);
+  --color-white-85: rgba(255,255,255,0.85);
 }
 
 * {
@@ -31,8 +41,9 @@
 
 body {
   margin: 0;
-  background-color: #111110;
-  color: #e8e8e6;
-  font-family: 'DM Sans', sans-serif;
+  background-color: #111216;
+  color: rgba(255,255,255,0.85);
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+  font-weight: 400;
   -webkit-font-smoothing: antialiased;
 }

@@ -13,15 +13,16 @@
     "dist:mac": "npm run build && electron-builder --mac"
   },
   "dependencies": {
+    "@tabler/icons-react": "^3.44.0",
+    "electron-store": "^8.2.0",
     "react": "^18.3.1",
-    "react-dom": "^18.3.1",
-    "electron-store": "^8.2.0"
+    "react-dom": "^18.3.1"
   },
   "devDependencies": {
+    "@tailwindcss/vite": "^4.1.7",
     "@types/react": "^18.3.12",
     "@types/react-dom": "^18.3.1",
     "@vitejs/plugin-react": "^4.3.3",
-    "@tailwindcss/vite": "^4.1.7",
     "concurrently": "^9.1.2",
     "electron": "^33.3.1",
     "electron-builder": "^25.1.8",
@@ -39,14 +40,31 @@
       "assets/**/*"
     ],
     "extraResources": [
-      { "from": "assets", "to": "assets" }
+      {
+        "from": "assets",
+        "to": "assets"
+      }
     ],
     "mac": {
-      "target": [{ "target": "dmg", "arch": ["universal"] }],
+      "target": [
+        {
+          "target": "dmg",
+          "arch": [
+            "universal"
+          ]
+        }
+      ],
       "icon": "assets/icon.icns"
     },
     "win": {
-      "target": [{ "target": "nsis", "arch": ["x64"] }],
+      "target": [
+        {
+          "target": "nsis",
+          "arch": [
+            "x64"
+          ]
+        }
+      ],
       "icon": "assets/icon.ico"
     },
     "nsis": {

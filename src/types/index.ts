@@ -20,6 +20,7 @@ export interface ServiceStatus {
   responseTimeMs: number
   lastChecked: string     // ISO timestamp string e.g. "2026-06-09T13:00:00.000Z"
   incidents: Incident[]   // empty array when everything is fine
+  history: StatusIndicator[]  // last 20 poll readings, oldest first
 }
 
 // user preferences stored on disk via electron-store
@@ -38,7 +39,12 @@ declare global {
       getStatuses:    () => Promise<ServiceStatus[]>
       getConfig:      () => Promise<AppConfig>
       saveConfig:     (config: Partial<AppConfig>) => Promise<void>
-      onStatusUpdate: (callback: (data: ServiceStatus[]) => void) => void
+      onStatusUpdate: (callback: (data: ServiceStatus[]) => void) => (() => void)
+      addService:     (name: string, url: string) => Promise<{ success: boolean; checkType: string }>
+      removeService:  (id: string) => Promise<void>
+      windowMinimize: () => void
+      windowMaximize: () => void
+      windowClose:    () => void
     }
   }
 }
