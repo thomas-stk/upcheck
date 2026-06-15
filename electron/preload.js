@@ -12,7 +12,17 @@ contextBridge.exposeInMainWorld('api', {
   // push subscription - React registers a callback, main calls it every poll cycle.
   // _event is the raw IPC event object we don't need, underscore = intentionally ignored.
   onStatusUpdate: (callback) => {
-    ipcRenderer.on('status-update', (_event, data) => callback(data))
+    const handler = (_event, data) => callback(data)
+    ipcRenderer.on('status-update', handler)
+    return () => ipcRenderer.removeListener('status-update', handler)
   },
+
+  addService:    (name, url) => ipcRenderer.invoke('add-service', { name, url }),
+  removeService: (id)       => ipcRenderer.invoke('remove-service', id),
+
+  // frameless window controls
+  windowMinimize: () => ipcRenderer.send('window-minimize'),
+  windowMaximize: () => ipcRenderer.send('window-maximize'),
+  windowClose:    () => ipcRenderer.send('window-close'),
 
 })
