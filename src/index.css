@@ -1,0 +1,38 @@
+@import "tailwindcss";
+
+/*
+  Tailwind v4 uses @theme instead of tailwind.config.js.
+  Every CSS variable defined here becomes a Tailwind utility automatically:
+  --color-bg-base  →  bg-bg-base, text-bg-base, border-bg-base, etc.
+  --font-sans      →  font-sans
+*/
+@theme {
+  --color-bg-base: #111110;
+  --color-bg-surface: #1a1a18;
+  --color-bg-raised: #222220;
+  --color-bg-hover: #2a2a28;
+
+  --color-status-operational: #5a9e4e;
+  --color-status-degraded: #b08030;
+  --color-status-outage: #b04040;
+  --color-status-unknown: #555555;
+
+  --color-text-primary: #e8e8e6;
+  --color-text-muted: #888884;
+  --color-text-faint: #555552;
+
+  --font-sans: 'DM Sans', sans-serif;
+  --font-serif: 'DM Serif Display', serif;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  background-color: #111110;
+  color: #e8e8e6;
+  font-family: 'DM Sans', sans-serif;
+  -webkit-font-smoothing: antialiased;
+}
