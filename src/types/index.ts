@@ -1,8 +1,7 @@
-// StatusIndicator is a union type, only these four string values are valid.
-// if you try to assign anything else TypeScript will error immediately.
+// the four states a service can be in — anything outside this list is a bug
 export type StatusIndicator = 'operational' | 'degraded' | 'outage' | 'unknown'
 
-// an individual incident reported by a status page
+// a single incident from a service's status page
 export interface Incident {
   id: string
   name: string
@@ -11,28 +10,28 @@ export interface Incident {
   updatedAt: string
 }
 
-// the full status snapshot for one service, built by the poller and sent via IPC
+// everything we know about a service after polling it
 export interface ServiceStatus {
   id: string
   name: string
   indicator: StatusIndicator
   description: string
   responseTimeMs: number
-  lastChecked: string     // ISO timestamp string e.g. "2026-06-09T13:00:00.000Z"
-  incidents: Incident[]   // empty array when everything is fine
+  lastChecked: string         // ISO timestamp e.g. "2026-06-09T13:00:00.000Z"
+  incidents: Incident[]       // empty when everything is fine
   history: StatusIndicator[]  // last 20 poll readings, oldest first
 }
 
-// user preferences stored on disk via electron-store
+// what gets saved to disk via electron-store
 export interface AppConfig {
   pollIntervalMs: number
   enabledServices: string[]
   notificationsEnabled: boolean
+  minimizeToTray: boolean
+  launchAtStartup: boolean
 }
 
-// tells TypeScript that window.api exists and what shape it has.
-// preload.js creates it at runtime, this declaration just makes TS aware of it.
-// Partial<AppConfig> means every field in AppConfig becomes optional for saveConfig.
+// preload.js creates window.api at runtime — this just tells TypeScript it exists
 declare global {
   interface Window {
     api: {

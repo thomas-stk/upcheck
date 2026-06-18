@@ -1,18 +1,18 @@
 const { net } = require('electron')
 
 function mapStatusPage(indicator) {
-    if (indicator === 'none')                          return 'operational'
-    if (indicator === 'minor')                         return 'degraded'
+    if (indicator === 'none')                              return 'operational'
+    if (indicator === 'minor')                             return 'degraded'
     if (indicator === 'major' || indicator === 'critical') return 'outage'
     return 'unknown'
 }
 
 async function fetchCustom(id, name, url) {
-    const base = url.replace(/\/$/, '')
+    const base  = url.replace(/\/$/, '')
     const lower = base.toLowerCase()
-    const t0 = Date.now()
+    const t0    = Date.now()
 
-    // Apple — JSONP wrapper, not standard JSON
+    // Apple wraps their status data in a JSONP function call instead of plain JSON
     if (lower.includes('apple.com')) {
         try {
             const res  = await net.fetch('https://www.apple.com/support/systemstatus/data/system_status_en_US.js')
@@ -30,7 +30,7 @@ async function fetchCustom(id, name, url) {
         } catch {}
     }
 
-    // Azure — RSS/XML feed, no JSON available
+    // Azure only publishes an RSS feed, no JSON endpoint available
     if (lower.includes('azure') || lower.includes('status.microsoft')) {
         try {
             const res  = await net.fetch('https://azurestatuscdn.azureedge.net/en-us/status/feed/')
@@ -46,7 +46,7 @@ async function fetchCustom(id, name, url) {
         } catch {}
     }
 
-    // Google Cloud — incidents.json, different shape to Statuspage
+    // Google Cloud uses its own incidents.json format rather than Statuspage
     if (lower.includes('cloud.google.com') || lower.includes('status.cloud.google')) {
         try {
             const res  = await net.fetch('https://status.cloud.google.com/incidents.json')
@@ -68,7 +68,7 @@ async function fetchCustom(id, name, url) {
         } catch {}
     }
 
-    // Statusgator — aggregator site, blocks HEAD so use GET
+    // Statusgator blocks HEAD requests so we have to do a full GET
     if (lower.includes('statusgator.com')) {
         try {
             const res = await net.fetch(base)
@@ -92,7 +92,7 @@ async function fetchCustom(id, name, url) {
         }
     }
 
-    // Slack — uses its own /api/v2.0.0/current, not the standard Statuspage path
+    // Slack has its own API format rather than using Statuspage
     if (lower.includes('slack-status.com') || lower.includes('slack.com')) {
         try {
             const res  = await net.fetch('https://slack-status.com/api/v2.0.0/current')
@@ -114,7 +114,7 @@ async function fetchCustom(id, name, url) {
         } catch {}
     }
 
-    // Statuspage.io — covers most SaaS (GitHub, Stripe, Twitch, etc.)
+    // most services run on Statuspage so this catches the majority of cases
     try {
         const res = await net.fetch(`${base}/api/v2/summary.json`)
         if (res.ok) {
@@ -138,7 +138,7 @@ async function fetchCustom(id, name, url) {
         }
     } catch {}
 
-    // fallback — plain HEAD ping
+    // nothing worked, just ping the URL and see if it responds at all
     try {
         const res = await net.fetch(base, { method: 'HEAD' })
         return {
@@ -170,13 +170,13 @@ async function pollAll(customServices = []) {
         if (result.status === 'fulfilled') return result.value
         console.error('poll failed for', customServices[i]?.name, result.reason)
         return {
-            id:            customServices[i]?.id ?? `service-${i}`,
-            name:          customServices[i]?.name ?? 'Unknown',
-            indicator:     'unknown',
+            id:             customServices[i]?.id ?? `service-${i}`,
+            name:           customServices[i]?.name ?? 'Unknown',
+            indicator:      'unknown',
             responseTimeMs: 0,
-            lastChecked:   new Date().toISOString(),
-            incidents:     [],
-            checkType:     'ping',
+            lastChecked:    new Date().toISOString(),
+            incidents:      [],
+            checkType:      'ping',
         }
     })
 }

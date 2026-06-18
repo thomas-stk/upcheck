@@ -36,14 +36,7 @@
     "productName": "UpCheck",
     "files": [
       "dist/**/*",
-      "electron/**/*",
-      "assets/**/*"
-    ],
-    "extraResources": [
-      {
-        "from": "assets",
-        "to": "assets"
-      }
+      "electron/**/*"
     ],
     "mac": {
       "target": [
@@ -54,7 +47,7 @@
           ]
         }
       ],
-      "icon": "assets/icon.icns"
+      "icon": "build/png/icon_1024.png"
     },
     "win": {
       "target": [
@@ -65,7 +58,7 @@
           ]
         }
       ],
-      "icon": "assets/icon.ico"
+      "icon": "build/icon.ico"
     },
     "nsis": {
       "oneClick": false,
