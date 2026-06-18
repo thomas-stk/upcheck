@@ -5,6 +5,7 @@ import Sidebar from './components/Sidebar'
 import ServiceGrid from './components/ServiceGrid'
 import IncidentPanel from './components/IncidentPanel'
 import AddServiceModal from './components/AddServiceModal'
+import SettingsModal from './components/SettingsModal'
 
 const greetings: Record<StatusIndicator, { line: string; keyword: string }> = {
   operational: { line: 'Most things are running', keyword: 'smoothly' },
@@ -32,8 +33,9 @@ function formatDateTime(d: Date): string {
 export default function App() {
   const [services,     setServices]     = useState<ServiceStatus[]>([])
   const [now,          setNow]          = useState(new Date())
-  const [showAddModal, setShowAddModal] = useState(false)
-  const [editMode,     setEditMode]     = useState(false)
+  const [showAddModal,      setShowAddModal]      = useState(false)
+  const [showSettingsModal, setShowSettingsModal] = useState(false)
+  const [editMode,          setEditMode]          = useState(false)
 
   useEffect(() => {
     getStatuses().then(setServices)
@@ -80,16 +82,17 @@ export default function App() {
           editMode={editMode}
           onToggleEdit={() => setEditMode(e => !e)}
           onAddClick={() => setShowAddModal(true)}
+          onSettingsClick={() => setShowSettingsModal(true)}
         />
 
         <main
           className="flex-1 overflow-y-auto"
           style={{ padding: 'clamp(16px, 2.5vw, 36px)' }}
         >
-          <p className="text-[9px] tracking-[0.07em] uppercase text-white-20 mb-1">
+          <p className="text-[10px] tracking-[0.07em] uppercase text-white-25 mb-1.5">
             {formatDateTime(now)}
           </p>
-          <p className="text-base font-light text-white-85 mb-5">
+          <p className="text-lg font-light text-white-85 mb-5">
             {greeting.line}{' '}
             <strong className="font-medium text-accent">{greeting.keyword}</strong>
           </p>
@@ -102,8 +105,8 @@ export default function App() {
                 { label: 'OUTAGE',      count: outage,      color: '#f87171' },
               ] as const).map(({ label, count, color }) => (
                 <div key={label} className="bg-white-3 border border-white-6 rounded-lg px-[14px] py-[10px]">
-                  <p className="text-[22px] font-light mb-0.5" style={{ color }}>{count}</p>
-                  <p className="text-[9px] tracking-[0.06em] text-white-40">{label}</p>
+                  <p className="text-[24px] font-light mb-0.5" style={{ color }}>{count}</p>
+                  <p className="text-[10px] tracking-[0.06em] text-white-40">{label}</p>
                 </div>
               ))}
             </div>
@@ -121,6 +124,9 @@ export default function App() {
 
       {showAddModal && (
         <AddServiceModal onClose={() => setShowAddModal(false)} />
+      )}
+      {showSettingsModal && (
+        <SettingsModal onClose={() => setShowSettingsModal(false)} />
       )}
     </div>
   )
