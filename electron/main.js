@@ -3,6 +3,7 @@ const path = require('path')
 const { startPoll, fetchCustom } = require('./poller/index')
 const { worstStatus, buildTooltip } = require('./utils')
 const Store = require('electron-store')
+const { autoUpdater } = require('electron-updater')
 
 const store = new Store()
 
@@ -23,6 +24,7 @@ let latestStatuses = []
 let mainWindow
 let tray
 let pollTimer
+let updateDownloaded = false
 const previousIndicators = {}
 
 const DEFAULT_SERVICES = [
@@ -154,10 +156,15 @@ function buildTrayMenu() {
       }))
     : [{ label: 'Checking services…', enabled: false }]
 
+  const updateItem = updateDownloaded
+    ? [{ label: 'Install Update & Restart', click: () => { app.isQuiting = true; autoUpdater.quitAndInstall() } }]
+    : []
+
   return Menu.buildFromTemplate([
     ...serviceItems,
     { type: 'separator' },
     { label: 'Open UpCheck', click: () => { mainWindow?.show(); mainWindow?.focus() } },
+    ...updateItem,
     { type: 'separator' },
     { label: 'Quit', click: () => { app.isQuiting = true; app.quit() } },
   ])
@@ -358,6 +365,20 @@ app.whenReady().then(() => {
 
   createWindow()
   createTray()
+
+  if (!isDev) {
+    autoUpdater.checkForUpdates()
+
+    autoUpdater.on('update-available', () => {
+      new Notification({ title: 'UpCheck update available', body: 'Downloading in the background...' }).show()
+    })
+
+    autoUpdater.on('update-downloaded', () => {
+      updateDownloaded = true
+      refreshTray()
+      new Notification({ title: 'Update ready to install', body: 'Open the tray menu to restart and apply it.' }).show()
+    })
+  }
 
   pollTimer = startPoll(
     handlePollResults,
