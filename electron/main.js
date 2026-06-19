@@ -298,6 +298,17 @@ app.whenReady().then(() => {
 
   ipcMain.handle('get-statuses', () => latestStatuses)
   ipcMain.handle('get-config',   () => getConfig())
+
+  ipcMain.handle('get-dismissed-incidents', () => store.get('dismissedIncidents', {}))
+  ipcMain.handle('dismiss-incidents', (_event, incidents) => {
+    if (!Array.isArray(incidents)) throw new Error('Invalid input')
+    const existing = store.get('dismissedIncidents', {})
+    for (const { id, updatedAt } of incidents) {
+      if (typeof id !== 'string' || typeof updatedAt !== 'string') continue
+      existing[id] = updatedAt
+    }
+    store.set('dismissedIncidents', existing)
+  })
   ipcMain.handle('save-config', (_event, config) => {
     if (typeof config !== 'object' || config === null || Array.isArray(config)) {
       throw new Error('Invalid config')
