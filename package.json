@@ -37,6 +37,9 @@
   "build": {
     "appId": "com.upcheck.app",
     "productName": "UpCheck",
+    "directories": {
+      "output": "release"
+    },
     "files": [
       "dist/**/*",
       "electron/**/*"
