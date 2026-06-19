@@ -1,6 +1,6 @@
 {
   "name": "upcheck",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Cross-platform desktop app for monitoring service status",
   "author": "Thomas",
   "main": "electron/main.js",
