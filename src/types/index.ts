@@ -41,6 +41,8 @@ declare global {
       onStatusUpdate: (callback: (data: ServiceStatus[]) => void) => (() => void)
       addService:     (name: string, url: string) => Promise<{ success: boolean; checkType: string }>
       removeService:  (id: string) => Promise<void>
+      getDismissedIncidents: () => Promise<Record<string, string>>
+      dismissIncidents: (incidents: { id: string; updatedAt: string }[]) => Promise<void>
       windowMinimize: () => void
       windowMaximize: () => void
       windowClose:    () => void
