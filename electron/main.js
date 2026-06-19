@@ -376,4 +376,8 @@ app.on('window-all-closed', () => {
 
 app.on('before-quit', () => {
   app.isQuiting = true
+  if (tray) {
+    tray.destroy()
+    tray = null
+  }
 })
