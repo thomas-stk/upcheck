@@ -1,6 +1,7 @@
 const { app, BrowserWindow, ipcMain, Tray, Menu, Notification, nativeImage } = require('electron')
 const path = require('path')
 const { startPoll, fetchCustom } = require('./poller/index')
+const { worstStatus, buildTooltip } = require('./utils')
 const Store = require('electron-store')
 
 const store = new Store()
@@ -12,7 +13,7 @@ const defaultConfig = {
   launchAtStartup: false,
 }
 
-const isDev = process.env.NODE_ENV !== 'production'
+const isDev = !app.isPackaged
 
 // without this Windows silently drops toast notifications
 if (process.platform === 'win32') app.setAppUserModelId('com.upcheck.app')
@@ -140,24 +141,6 @@ const STATUS_EMOJI = {
   unknown:     '⚪',
 }
 
-function worstStatus(statuses) {
-  if (statuses.length === 0)                          return 'unknown'
-  if (statuses.some(s => s.indicator === 'outage'))   return 'outage'
-  if (statuses.some(s => s.indicator === 'degraded')) return 'degraded'
-  if (statuses.some(s => s.indicator === 'unknown'))  return 'unknown'
-  return 'operational'
-}
-
-function buildTooltip(statuses) {
-  const outages  = statuses.filter(s => s.indicator === 'outage')
-  const degraded = statuses.filter(s => s.indicator === 'degraded')
-  if (outages.length === 1)  return `${outages[0].name} is down`
-  if (outages.length > 1)    return `${outages.length} services down`
-  if (degraded.length === 1) return `${degraded[0].name} is degraded`
-  if (degraded.length > 1)   return `${degraded.length} services degraded`
-  if (statuses.length === 0) return 'UpCheck:Starting…'
-  return 'UpCheck:All systems operational'
-}
 
 function buildTrayMenu() {
   const cap = s => s.charAt(0).toUpperCase() + s.slice(1)
