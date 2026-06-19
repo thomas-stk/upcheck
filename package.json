@@ -17,6 +17,7 @@
   "dependencies": {
     "@tabler/icons-react": "^3.44.0",
     "electron-store": "^8.2.0",
+    "electron-updater": "^6.8.9",
     "react": "^18.3.1",
     "react-dom": "^18.3.1"
   },
@@ -37,6 +38,11 @@
   "build": {
     "appId": "com.upcheck.app",
     "productName": "UpCheck",
+    "publish": {
+      "provider": "github",
+      "owner": "thomas-stk",
+      "repo": "upcheck"
+    },
     "directories": {
       "output": "release"
     },
