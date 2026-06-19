@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { IconX } from '@tabler/icons-react'
 import type { ServiceStatus, Incident } from '../types/index'
 
@@ -56,20 +56,34 @@ interface IncidentPanelProps {
 }
 
 export default function IncidentPanel({ services }: IncidentPanelProps) {
-  const [dismissed, setDismissed] = useState<Set<string>>(new Set())
+  // id -> updatedAt of the dismissed version; persisted across restarts
+  const [dismissed, setDismissed] = useState<Record<string, string>>({})
+
+  useEffect(() => {
+    window.api.getDismissedIncidents().then(setDismissed)
+  }, [])
 
   const allIncidents: (Incident & { serviceName?: string })[] = []
   services.forEach(svc =>
     svc.incidents.forEach(i => allIncidents.push({ ...i, serviceName: svc.name }))
   )
-  const visible = allIncidents.filter(i => !dismissed.has(i.id))
+  // hide an incident only if this exact version (same updatedAt) was dismissed
+  const visible = allIncidents.filter(i => dismissed[i.id] !== i.updatedAt)
 
-  function dismiss(id: string) {
-    setDismissed(prev => new Set(prev).add(id))
+  function dismiss(incident: Incident) {
+    const entry = [{ id: incident.id, updatedAt: incident.updatedAt }]
+    setDismissed(prev => ({ ...prev, [incident.id]: incident.updatedAt }))
+    window.api.dismissIncidents(entry)
   }
 
   function clearAll() {
-    setDismissed(new Set(allIncidents.map(i => i.id)))
+    const entries = visible.map(i => ({ id: i.id, updatedAt: i.updatedAt }))
+    setDismissed(prev => {
+      const next = { ...prev }
+      visible.forEach(i => { next[i.id] = i.updatedAt })
+      return next
+    })
+    window.api.dismissIncidents(entries)
   }
 
   return (
@@ -95,7 +109,7 @@ export default function IncidentPanel({ services }: IncidentPanelProps) {
           </p>
         ) : (
           visible.map(i => (
-            <IncidentRow key={i.id} incident={i} onDismiss={() => dismiss(i.id)} />
+            <IncidentRow key={i.id} incident={i} onDismiss={() => dismiss(i)} />
           ))
         )}
       </div>

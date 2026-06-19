@@ -19,6 +19,9 @@ contextBridge.exposeInMainWorld('api', {
   addService:    (name, url) => ipcRenderer.invoke('add-service', { name, url }),
   removeService: (id)        => ipcRenderer.invoke('remove-service', id),
 
+  getDismissedIncidents: ()          => ipcRenderer.invoke('get-dismissed-incidents'),
+  dismissIncidents:      (incidents) => ipcRenderer.invoke('dismiss-incidents', incidents),
+
   // frameless window on Windows means we draw our own title bar controls
   windowMinimize: () => ipcRenderer.send('window-minimize'),
   windowMaximize: () => ipcRenderer.send('window-maximize'),
