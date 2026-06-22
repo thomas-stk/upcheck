@@ -67,6 +67,24 @@ npm test
 
 Runs the Vitest unit test suite (poller logic and utility functions).
 
+## Settings
+
+Open settings via the gear icon in the sidebar.
+
+### General
+
+| Setting | Description |
+|---|---|
+| Notifications | Send a desktop notification when a service changes status |
+| Poll interval | How often to check service statuses (30s, 1m, 5m, or 15m) |
+
+### Window
+
+| Setting | Description |
+|---|---|
+| Launch at startup | Start UpCheck automatically when you log in |
+| Minimize to tray on close | Hide to the system tray instead of quitting when you close the window |
+
 ## Default Services
 
 | Service | Status Page |
