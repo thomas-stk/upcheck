@@ -1,3 +1,4 @@
+import { useState, useEffect } from 'react'
 import type { ServiceStatus, StatusIndicator } from '../types/index'
 
 const indicatorLabel: Record<StatusIndicator, string> = {
@@ -37,12 +38,17 @@ interface ServiceCardProps {
 
 export default function ServiceCard({ service, editMode, onRemove, onClick }: ServiceCardProps) {
   const color = indicatorColor[service.indicator]
+  const [confirming, setConfirming] = useState(false)
+
+  useEffect(() => {
+    if (!editMode) setConfirming(false)
+  }, [editMode])
 
   return (
     <div className="relative">
-      {editMode && (
+      {editMode && !confirming && (
         <button
-          onClick={onRemove}
+          onClick={e => { e.stopPropagation(); setConfirming(true) }}
           title="Remove service"
           className="absolute -top-1.5 -right-1.5 z-10 w-5 h-5 rounded-full bg-status-outage border-2 border-bg-base text-white cursor-pointer flex items-center justify-center text-[12px] leading-none font-semibold"
         >
@@ -50,12 +56,38 @@ export default function ServiceCard({ service, editMode, onRemove, onClick }: Se
         </button>
       )}
 
+      {confirming && (
+        <div className="absolute inset-0 z-20 rounded-lg bg-[rgba(17,18,22,0.94)] flex flex-col items-center justify-center gap-3">
+          <p className="text-[12px] text-white-60 text-center px-4">
+            Remove <span className="text-white-85 font-medium">{service.name}</span>?
+          </p>
+          <div className="flex gap-2">
+            <button
+              onClick={() => setConfirming(false)}
+              className="text-[11px] text-white-45 px-3 py-1.5 rounded-md bg-white-6 border border-white-10 cursor-pointer hover:bg-white-8 hover:text-white-75 transition-colors duration-100 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-white-20"
+            >
+              Cancel
+            </button>
+            <button
+              onClick={onRemove}
+              className="text-[11px] text-status-outage px-3 py-1.5 rounded-md bg-[rgba(248,113,113,0.1)] border border-[rgba(248,113,113,0.25)] cursor-pointer hover:bg-[rgba(248,113,113,0.18)] transition-colors duration-100 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-[rgba(248,113,113,0.4)]"
+            >
+              Remove
+            </button>
+          </div>
+        </div>
+      )}
+
       <button
         onClick={onClick}
-        className={`w-full text-left bg-white-3 rounded-lg px-4 py-4 cursor-pointer transition-[border-color,background] duration-150 border ${
-          editMode
-            ? 'border-[rgba(248,113,113,0.25)]'
-            : 'border-white-6 hover:border-white-12 hover:bg-white-5'
+        disabled={confirming}
+        title={!editMode && !confirming ? service.url : undefined}
+        className={`w-full text-left bg-white-3 rounded-lg px-4 py-4 transition-[border-color,background] duration-150 border ${
+          confirming
+            ? 'cursor-default border-[rgba(248,113,113,0.25)]'
+            : editMode
+            ? 'cursor-default border-[rgba(248,113,113,0.25)]'
+            : 'cursor-pointer border-white-6 hover:border-white-12 hover:bg-white-5'
         }`}
       >
         <div className="flex items-center justify-between mb-3">
@@ -85,7 +117,7 @@ export default function ServiceCard({ service, editMode, onRemove, onClick }: Se
         </div>
 
         <div className="flex items-center gap-3">
-          <span className="text-[11px] text-white-30">
+          <span className="text-[11px] text-white-50">
             {formatMs(service.responseTimeMs)}
           </span>
           {service.incidents.length > 0 && (
@@ -93,7 +125,7 @@ export default function ServiceCard({ service, editMode, onRemove, onClick }: Se
               {service.incidents.length} incident{service.incidents.length > 1 ? 's' : ''}
             </span>
           )}
-          <span className="text-[11px] text-white-20 ml-auto">
+          <span className="text-[11px] text-white-45 ml-auto">
             {service.lastChecked ? formatAge(service.lastChecked) : '—'}
           </span>
         </div>

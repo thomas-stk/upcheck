@@ -6,3 +6,5 @@ export const saveConfig     = (c: Partial<AppConfig>): Promise<void> => window.a
 export const onStatusUpdate = (cb: (d: ServiceStatus[]) => void): (() => void) => window.api.onStatusUpdate(cb)
 export const addService     = (name: string, url: string)             => window.api.addService(name, url)
 export const removeService  = (id: string)                            => window.api.removeService(id)
+export const openUrl        = (url: string)                           => window.api.openUrl(url)
+export const triggerPoll    = ()                                       => window.api.triggerPoll()

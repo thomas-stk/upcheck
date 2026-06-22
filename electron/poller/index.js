@@ -193,4 +193,11 @@ function startPoll(onUpdate, getCustomServices = () => [], intervalMs = 60000) {
     return setInterval(tick, intervalMs)
 }
 
-module.exports = { startPoll, fetchCustom, _setFetchForTesting }
+async function triggerPoll(onUpdate, getCustomServices = () => []) {
+    const results = await pollAll(getCustomServices())
+    const changed = results.filter(s => previousStatuses[s.id] !== s.indicator)
+    changed.forEach(s => { previousStatuses[s.id] = s.indicator })
+    onUpdate(results, changed)
+}
+
+module.exports = { startPoll, triggerPoll, fetchCustom, _setFetchForTesting }
