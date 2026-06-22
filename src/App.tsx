@@ -67,20 +67,22 @@ export default function App() {
         <span className="text-[11px] tracking-[0.08em] text-white-20 uppercase">
           UpCheck
         </span>
-        <div
-          className="absolute right-0 flex items-stretch h-full"
-          style={{ WebkitAppRegion: 'no-drag' } as React.CSSProperties}
-        >
-          <button onClick={() => window.api.windowMinimize()} className="w-14 flex items-center justify-center border-0 bg-transparent cursor-pointer text-white-40 hover:text-white-85 hover:bg-white/[0.08] active:bg-white/[0.14] transition-colors duration-100">
-            <svg width="12" height="1" viewBox="0 0 12 1" fill="currentColor"><rect width="12" height="1"/></svg>
-          </button>
-          <button onClick={() => window.api.windowMaximize()} className="w-14 flex items-center justify-center border-0 bg-transparent cursor-pointer text-white-40 hover:text-white-85 hover:bg-white/[0.08] active:bg-white/[0.14] transition-colors duration-100">
-            <svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="currentColor" strokeWidth="1.1"><rect x="0.5" y="0.5" width="11" height="11"/></svg>
-          </button>
-          <button onClick={() => window.api.windowClose()} className="w-14 flex items-center justify-center border-0 bg-transparent cursor-pointer text-white-40 hover:text-white hover:bg-[#c42b1c] active:bg-[#8b1a12] transition-colors duration-100">
-            <svg width="12" height="12" viewBox="0 0 12 12" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round"><line x1="0" y1="0" x2="12" y2="12"/><line x1="12" y1="0" x2="0" y2="12"/></svg>
-          </button>
-        </div>
+        {window.api.platform === 'win32' && (
+          <div
+            className="absolute right-0 flex items-stretch h-full"
+            style={{ WebkitAppRegion: 'no-drag' } as React.CSSProperties}
+          >
+            <button onClick={() => window.api.windowMinimize()} className="w-14 flex items-center justify-center border-0 bg-transparent cursor-pointer text-white-40 hover:text-white-85 hover:bg-white/[0.08] active:bg-white/[0.14] transition-colors duration-100">
+              <svg width="12" height="1" viewBox="0 0 12 1" fill="currentColor"><rect width="12" height="1"/></svg>
+            </button>
+            <button onClick={() => window.api.windowMaximize()} className="w-14 flex items-center justify-center border-0 bg-transparent cursor-pointer text-white-40 hover:text-white-85 hover:bg-white/[0.08] active:bg-white/[0.14] transition-colors duration-100">
+              <svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="currentColor" strokeWidth="1.1"><rect x="0.5" y="0.5" width="11" height="11"/></svg>
+            </button>
+            <button onClick={() => window.api.windowClose()} className="w-14 flex items-center justify-center border-0 bg-transparent cursor-pointer text-white-40 hover:text-white hover:bg-[#c42b1c] active:bg-[#8b1a12] transition-colors duration-100">
+              <svg width="12" height="12" viewBox="0 0 12 12" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round"><line x1="0" y1="0" x2="12" y2="12"/><line x1="12" y1="0" x2="0" y2="12"/></svg>
+            </button>
+          </div>
+        )}
       </div>
 
       <div className="flex flex-1 overflow-hidden">
