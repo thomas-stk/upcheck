@@ -1,11 +1,12 @@
 import { useState, useEffect } from 'react'
 import type { ServiceStatus, StatusIndicator } from './types/index'
-import { getStatuses, onStatusUpdate, removeService } from './services/ipc'
+import { getStatuses, getConfig, onStatusUpdate, removeService, triggerPoll } from './services/ipc'
 import Sidebar from './components/Sidebar'
 import ServiceGrid from './components/ServiceGrid'
 import IncidentPanel from './components/IncidentPanel'
 import AddServiceModal from './components/AddServiceModal'
 import SettingsModal from './components/SettingsModal'
+import HelpModal from './components/HelpModal'
 
 const greetings: Record<StatusIndicator, { line: string; keyword: string }> = {
   operational: { line: 'Most things are running', keyword: 'smoothly' },
@@ -31,17 +32,30 @@ function formatDateTime(d: Date): string {
 }
 
 export default function App() {
-  const [services,     setServices]     = useState<ServiceStatus[]>([])
-  const [now,          setNow]          = useState(new Date())
+  const [services,       setServices]       = useState<ServiceStatus[]>([])
+  const [now,            setNow]            = useState(new Date())
+  const [loading,        setLoading]        = useState(true)
+  const [refreshing,     setRefreshing]     = useState(false)
+  const [lastPolledAt,   setLastPolledAt]   = useState<Date | null>(null)
+  const [pollIntervalMs, setPollIntervalMs] = useState<number>(60_000)
   const [showAddModal,      setShowAddModal]      = useState(false)
   const [showSettingsModal, setShowSettingsModal] = useState(false)
+  const [showHelpModal,     setShowHelpModal]     = useState(false)
   const [editMode,          setEditMode]          = useState(false)
 
   useEffect(() => {
-    getStatuses().then(setServices)
-    const unsub = onStatusUpdate(setServices)
+    getStatuses().then(s => { setServices(s); setLastPolledAt(new Date()) }).catch(() => {}).finally(() => setLoading(false))
+    getConfig().then(c => setPollIntervalMs(c.pollIntervalMs))
+    const unsub = onStatusUpdate(s => { setServices(s); setLastPolledAt(new Date()) })
     return unsub
   }, [])
+
+  async function handleRefresh() {
+    setRefreshing(true)
+    await triggerPoll()
+    setLastPolledAt(new Date())
+    setRefreshing(false)
+  }
 
   useEffect(() => {
     const id = setInterval(() => setNow(new Date()), 1000)
@@ -57,6 +71,14 @@ export default function App() {
     ? { line: `${degraded} ${degraded === 1 ? 'service' : 'services'} ${degraded === 1 ? 'is' : 'are'}`, keyword: 'struggling' }
     : greetings[overall]
 
+  const polledAgeMs = lastPolledAt ? now.getTime() - lastPolledAt.getTime() : null
+  const isStale     = polledAgeMs !== null && polledAgeMs > 2 * pollIntervalMs
+  const checkedText = polledAgeMs === null        ? null
+    : polledAgeMs < 10_000                        ? 'just now'
+    : polledAgeMs < 60_000                        ? `${Math.floor(polledAgeMs / 1_000)}s ago`
+    : polledAgeMs < 3_600_000                     ? `${Math.floor(polledAgeMs / 60_000)}m ago`
+    : `${Math.floor(polledAgeMs / 3_600_000)}h ago`
+
   return (
     <div className="flex flex-col h-screen bg-bg-base font-sans select-none">
 
@@ -64,7 +86,7 @@ export default function App() {
         className="h-10 shrink-0 flex items-center justify-center relative border-b bg-bg-surface border-white-6"
         style={{ WebkitAppRegion: 'drag' } as React.CSSProperties}
       >
-        <span className="text-[11px] tracking-[0.08em] text-white-20 uppercase">
+        <span className="text-[11px] tracking-[0.08em] text-white-45 uppercase">
           UpCheck
         </span>
         {window.api.platform === 'win32' && (
@@ -88,17 +110,31 @@ export default function App() {
       <div className="flex flex-1 overflow-hidden">
         <Sidebar
           editMode={editMode}
+          refreshing={refreshing}
           onToggleEdit={() => setEditMode(e => !e)}
           onAddClick={() => setShowAddModal(true)}
           onSettingsClick={() => setShowSettingsModal(true)}
+          onHelpClick={() => setShowHelpModal(true)}
+          onRefreshClick={handleRefresh}
         />
 
         <main
           className="flex-1 overflow-y-auto"
           style={{ padding: 'clamp(16px, 2.5vw, 36px)' }}
         >
-          <p className="text-[10px] tracking-[0.07em] uppercase text-white-25 mb-1.5">
+          <p className="text-[10px] tracking-[0.07em] uppercase text-white-45 mb-1.5">
             {formatDateTime(now)}
+            {checkedText && (
+              <>
+                {' · '}
+                <span
+                  className={`normal-case tracking-normal ${isStale ? 'text-status-degraded' : 'text-white-30'}`}
+                  title={isStale ? 'Polling may have stopped. Data could be stale.' : undefined}
+                >
+                  {checkedText}
+                </span>
+              </>
+            )}
           </p>
           <p className="text-lg font-light text-white-85 mb-5">
             {greeting.line}{' '}
@@ -123,6 +159,7 @@ export default function App() {
           <ServiceGrid
             services={services}
             editMode={editMode}
+            loading={loading}
             onRemove={id => removeService(id)}
           />
         </main>
@@ -134,7 +171,13 @@ export default function App() {
         <AddServiceModal onClose={() => setShowAddModal(false)} />
       )}
       {showSettingsModal && (
-        <SettingsModal onClose={() => setShowSettingsModal(false)} />
+        <SettingsModal onClose={() => {
+          setShowSettingsModal(false)
+          getConfig().then(c => setPollIntervalMs(c.pollIntervalMs))
+        }} />
+      )}
+      {showHelpModal && (
+        <HelpModal onClose={() => setShowHelpModal(false)} />
       )}
     </div>
   )
