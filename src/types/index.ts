@@ -43,6 +43,7 @@ declare global {
       removeService:  (id: string) => Promise<void>
       getDismissedIncidents: () => Promise<Record<string, string>>
       dismissIncidents: (incidents: { id: string; updatedAt: string }[]) => Promise<void>
+      platform:       string
       windowMinimize: () => void
       windowMaximize: () => void
       windowClose:    () => void
