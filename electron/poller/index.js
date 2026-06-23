@@ -1,5 +1,5 @@
 const { net } = require('electron')
-const { mapStatusPage } = require('../utils')
+const { mapStatusPage, mapComponentStatus, worstOfTwo } = require('../utils')
 
 // test seam: replaced by tests to avoid requiring a real Electron process
 let _fetchFn = null
@@ -119,9 +119,14 @@ async function fetchCustom(id, name, url) {
         if (res.ok) {
             const data = await res.json()
             if (data?.status?.indicator !== undefined) {
+                const topLevel = mapStatusPage(data.status.indicator)
+                const componentWorst = (data.components || []).reduce(
+                    (worst, c) => worstOfTwo(worst, mapComponentStatus(c.status)),
+                    'operational'
+                )
                 return {
                     id, name,
-                    indicator: mapStatusPage(data.status.indicator),
+                    indicator: worstOfTwo(topLevel, componentWorst),
                     responseTimeMs: Date.now() - t0,
                     lastChecked: new Date().toISOString(),
                     incidents: (data.incidents || []).map(i => ({
