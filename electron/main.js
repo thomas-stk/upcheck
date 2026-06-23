@@ -1,4 +1,4 @@
-const { app, BrowserWindow, ipcMain, Tray, Menu, Notification, nativeImage, shell } = require('electron')
+const { app, BrowserWindow, ipcMain, Tray, Menu, Notification, nativeImage, shell, dialog } = require('electron')
 const path = require('path')
 const { startPoll, triggerPoll, fetchCustom } = require('./poller/index')
 const { worstStatus, buildTooltip } = require('./utils')
@@ -25,6 +25,7 @@ let mainWindow
 let tray
 let pollTimer
 let updateDownloaded = false
+let updateDownloadProgress = 0
 const previousIndicators = {}
 
 const DEFAULT_SERVICES = [
@@ -156,9 +157,12 @@ function buildTrayMenu() {
       }))
     : [{ label: 'Checking services…', enabled: false }]
 
-  const updateItem = updateDownloaded
-    ? [{ label: 'Install Update & Restart', click: () => { app.isQuiting = true; autoUpdater.quitAndInstall() } }]
-    : []
+  let updateItem = []
+  if (updateDownloaded) {
+    updateItem = [{ label: 'Install Update & Restart', click: () => { app.isQuiting = true; autoUpdater.quitAndInstall() } }]
+  } else if (updateDownloadProgress > 0 && updateDownloadProgress < 100) {
+    updateItem = [{ label: `Downloading update... ${updateDownloadProgress}%`, enabled: false }]
+  }
 
   return Menu.buildFromTemplate([
     ...serviceItems,
@@ -173,7 +177,12 @@ function buildTrayMenu() {
 function refreshTray() {
   if (!tray) return
   tray.setImage(trayIcons()[worstStatus(latestStatuses)])
-  tray.setToolTip(buildTooltip(latestStatuses))
+  const base = buildTooltip(latestStatuses)
+  if (updateDownloadProgress > 0 && updateDownloadProgress < 100) {
+    tray.setToolTip(`${base}\nDownloading update... ${updateDownloadProgress}%`)
+  } else {
+    tray.setToolTip(base)
+  }
   tray.setContextMenu(buildTrayMenu())
 }
 
@@ -386,14 +395,33 @@ app.whenReady().then(() => {
   if (!isDev) {
     autoUpdater.checkForUpdates()
 
-    autoUpdater.on('update-available', () => {
-      new Notification({ title: 'UpCheck update available', body: 'Downloading in the background...' }).show()
+    autoUpdater.on('update-available', (info) => {
+      new Notification({ title: 'UpCheck update available', body: `v${info.version} is downloading...` }).show()
+    })
+
+    autoUpdater.on('download-progress', (progress) => {
+      updateDownloadProgress = Math.round(progress.percent)
+      refreshTray()
     })
 
     autoUpdater.on('update-downloaded', () => {
       updateDownloaded = true
+      updateDownloadProgress = 0
       refreshTray()
-      new Notification({ title: 'Update ready to install', body: 'Open the tray menu to restart and apply it.' }).show()
+      dialog.showMessageBox({
+        type: 'info',
+        title: 'Update Ready',
+        message: 'UpCheck has been updated.',
+        detail: 'Restart now to apply the update, or continue and restart later.',
+        buttons: ['Restart Now', 'Later'],
+        defaultId: 0,
+        cancelId: 1,
+      }).then(({ response }) => {
+        if (response === 0) {
+          app.isQuiting = true
+          autoUpdater.quitAndInstall()
+        }
+      })
     })
   }
 
