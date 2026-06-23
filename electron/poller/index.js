@@ -17,7 +17,7 @@ async function fetchCustom(id, name, url) {
             const res  = await doFetch('https://www.apple.com/support/systemstatus/data/system_status_en_US.js')
             const text = await res.text()
             const json = JSON.parse(text.replace(/^Apple\.SystemStatus\.apiResult\(/, '').replace(/\);\s*$/, ''))
-            const hasIssues = json.services.some(s => s.events && s.events.length > 0)
+            const hasIssues = json.services.some(s => s.events && s.events.some(e => e.eventStatus !== 'resolved'))
             return {
                 id, name,
                 indicator: hasIssues ? 'degraded' : 'operational',
