@@ -66,7 +66,7 @@ export default function AddServiceModal({ onClose }: AddServiceModalProps) {
         </div>
 
         <div className="mb-4">
-          <p className="text-[9px] tracking-[0.07em] uppercase text-white-20 mb-2">Quick add</p>
+          <p className="text-[9px] tracking-[0.07em] uppercase text-white-45 mb-2">Quick add</p>
           <div className="flex gap-1.5">
             {suggestions.map(s => (
               <button
@@ -87,9 +87,9 @@ export default function AddServiceModal({ onClose }: AddServiceModalProps) {
 
         <form onSubmit={handleSubmit}>
           <div className="mb-3">
-            <label className="text-[9px] tracking-[0.07em] uppercase text-white-30 mb-1.5 block">Service name</label>
+            <label className="text-[10px] tracking-[0.06em] uppercase text-white-50 mb-1.5 block">Service name</label>
             <input
-              className="w-full bg-white-5 border border-white-10 rounded-md px-[10px] py-2 text-xs text-white-80 outline-none"
+              className="w-full bg-white-5 border border-white-10 rounded-md px-[10px] py-2 text-xs text-white-80 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-[rgba(129,140,248,0.5)]"
               placeholder="e.g. GitHub"
               value={name}
               onChange={e => setName(e.target.value)}
@@ -98,14 +98,14 @@ export default function AddServiceModal({ onClose }: AddServiceModalProps) {
           </div>
 
           <div className="mb-4">
-            <label className="text-[9px] tracking-[0.07em] uppercase text-white-30 mb-1.5 block">Status page URL</label>
+            <label className="text-[10px] tracking-[0.06em] uppercase text-white-50 mb-1.5 block">Status page URL</label>
             <input
-              className="w-full bg-white-5 border border-white-10 rounded-md px-[10px] py-2 text-xs text-white-80 outline-none"
+              className="w-full bg-white-5 border border-white-10 rounded-md px-[10px] py-2 text-xs text-white-80 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-[rgba(129,140,248,0.5)]"
               placeholder="e.g. https://githubstatus.com"
               value={url}
               onChange={e => { setUrl(e.target.value); setError(null) }}
             />
-            <p className="text-[9px] text-white-20 mt-[5px]">
+            <p className="text-[9px] text-white-45 mt-[5px]">
               Statuspage.io pages get full incident data automatically
             </p>
           </div>

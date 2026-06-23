@@ -1,6 +1,6 @@
-const { app, BrowserWindow, ipcMain, Tray, Menu, Notification, nativeImage } = require('electron')
+const { app, BrowserWindow, ipcMain, Tray, Menu, Notification, nativeImage, shell } = require('electron')
 const path = require('path')
-const { startPoll, fetchCustom } = require('./poller/index')
+const { startPoll, triggerPoll, fetchCustom } = require('./poller/index')
 const { worstStatus, buildTooltip } = require('./utils')
 const Store = require('electron-store')
 const { autoUpdater } = require('electron-updater')
@@ -180,13 +180,15 @@ function refreshTray() {
 // Poll results
 
 function handlePollResults(results, changed) {
+  const customServices = store.get('customServices', [])
+  const urlMap = Object.fromEntries(customServices.map(s => [s.id, s.url]))
   results.forEach(s => {
     if (!historyBuffer[s.id]) historyBuffer[s.id] = []
     historyBuffer[s.id].push(s.indicator)
     if (historyBuffer[s.id].length > 20) historyBuffer[s.id].shift()
   })
   store.set('history', historyBuffer)
-  latestStatuses = results.map(s => ({ ...s, history: historyBuffer[s.id] ?? [] }))
+  latestStatuses = results.map(s => ({ ...s, url: urlMap[s.id] ?? '', history: historyBuffer[s.id] ?? [] }))
 
   refreshTray()
 
@@ -296,8 +298,12 @@ app.whenReady().then(() => {
   ipcMain.on('window-maximize', () => mainWindow.isMaximized() ? mainWindow.unmaximize() : mainWindow.maximize())
   ipcMain.on('window-close',    () => mainWindow.close())
 
-  ipcMain.handle('get-statuses', () => latestStatuses)
-  ipcMain.handle('get-config',   () => getConfig())
+  ipcMain.handle('get-statuses',  () => latestStatuses)
+  ipcMain.handle('get-config',    () => getConfig())
+  ipcMain.handle('trigger-poll',  () => triggerPoll(handlePollResults, () => store.get('customServices', [])))
+  ipcMain.handle('open-url', (_event, url) => {
+    if (typeof url === 'string' && /^https?:\/\//i.test(url)) shell.openExternal(url)
+  })
 
   ipcMain.handle('get-dismissed-incidents', () => store.get('dismissedIncidents', {}))
   ipcMain.handle('dismiss-incidents', (_event, incidents) => {
@@ -357,7 +363,7 @@ app.whenReady().then(() => {
     historyBuffer[id] = [result.indicator]
     store.set('history', historyBuffer)
 
-    latestStatuses = [...latestStatuses, { ...result, history: historyBuffer[id] }]
+    latestStatuses = [...latestStatuses, { ...result, url, history: historyBuffer[id] }]
     mainWindow.webContents.send('status-update', latestStatuses)
     refreshTray()
 

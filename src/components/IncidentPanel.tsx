@@ -26,11 +26,12 @@ interface IncidentRowProps {
 function IncidentRow({ incident, onDismiss }: IncidentRowProps) {
   const color = impactColor[incident.impact] ?? 'rgba(255,255,255,0.25)'
   return (
-    <div className="relative group pb-3 mb-3 pl-3 border-l-2 border-b border-white-4" style={{ borderLeftColor: color }}>
+    <div className="relative group pb-3 mb-3 pl-4 border-b border-white-4">
+      <span className="absolute left-0 top-[7px] w-1.5 h-1.5 rounded-full shrink-0" style={{ background: color }} />
       <button
         onClick={onDismiss}
         title="Dismiss"
-        className="absolute top-0 right-0 w-5 h-5 flex items-center justify-center bg-transparent border-0 cursor-pointer text-white-20 opacity-0 group-hover:opacity-100 transition-opacity duration-100 hover:text-white-50"
+        className="absolute top-0 right-0 w-5 h-5 flex items-center justify-center bg-transparent border-0 cursor-pointer text-white-30 rounded opacity-0 group-hover:opacity-100 focus-visible:opacity-100 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-white-20 transition-opacity duration-100 hover:text-white-75"
       >
         <IconX size={11} stroke={2} />
       </button>
@@ -45,7 +46,7 @@ function IncidentRow({ incident, onDismiss }: IncidentRowProps) {
       </p>
       <div className="flex items-center justify-between">
         <span className="text-[10px] capitalize font-medium" style={{ color }}>{incident.impact}</span>
-        <span className="text-[10px] text-white-25">{formatAge(incident.updatedAt)}</span>
+        <span className="text-[10px] text-white-45">{formatAge(incident.updatedAt)}</span>
       </div>
     </div>
   )
@@ -56,7 +57,6 @@ interface IncidentPanelProps {
 }
 
 export default function IncidentPanel({ services }: IncidentPanelProps) {
-  // id -> updatedAt of the dismissed version; persisted across restarts
   const [dismissed, setDismissed] = useState<Record<string, string>>({})
 
   useEffect(() => {
@@ -67,13 +67,11 @@ export default function IncidentPanel({ services }: IncidentPanelProps) {
   services.forEach(svc =>
     svc.incidents.forEach(i => allIncidents.push({ ...i, serviceName: svc.name }))
   )
-  // hide an incident only if this exact version (same updatedAt) was dismissed
   const visible = allIncidents.filter(i => dismissed[i.id] !== i.updatedAt)
 
   function dismiss(incident: Incident) {
-    const entry = [{ id: incident.id, updatedAt: incident.updatedAt }]
     setDismissed(prev => ({ ...prev, [incident.id]: incident.updatedAt }))
-    window.api.dismissIncidents(entry)
+    window.api.dismissIncidents([{ id: incident.id, updatedAt: incident.updatedAt }])
   }
 
   function clearAll() {
@@ -95,7 +93,7 @@ export default function IncidentPanel({ services }: IncidentPanelProps) {
         {visible.length > 0 && (
           <button
             onClick={clearAll}
-            className="text-[10px] text-white-75 bg-transparent border-0 cursor-pointer p-0 transition-colors duration-100"
+            className="text-[10px] text-white-45 bg-transparent border-0 cursor-pointer p-0 hover:text-white-75 transition-colors duration-100"
           >
             Clear all
           </button>
@@ -104,9 +102,7 @@ export default function IncidentPanel({ services }: IncidentPanelProps) {
 
       <div className="flex-1 overflow-y-auto px-4 pt-4">
         {visible.length === 0 ? (
-          <p className="text-[11px] text-white-20 leading-relaxed">
-            No active incidents
-          </p>
+          <p className="text-[11px] text-white-45 leading-relaxed">No active incidents</p>
         ) : (
           visible.map(i => (
             <IncidentRow key={i.id} incident={i} onDismiss={() => dismiss(i)} />
