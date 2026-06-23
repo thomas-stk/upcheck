@@ -16,6 +16,19 @@ const defaultConfig = {
 
 const isDev = !app.isPackaged
 
+const gotLock = app.requestSingleInstanceLock()
+if (!gotLock) {
+  app.quit()
+} else {
+  app.on('second-instance', () => {
+    if (mainWindow) {
+      if (mainWindow.isMinimized()) mainWindow.restore()
+      mainWindow.show()
+      mainWindow.focus()
+    }
+  })
+}
+
 // without this Windows silently drops toast notifications
 if (process.platform === 'win32') app.setAppUserModelId('com.upcheck.app')
 
@@ -405,6 +418,10 @@ app.whenReady().then(() => {
 
   if (!isDev) {
     autoUpdater.checkForUpdates()
+
+    autoUpdater.on('error', (err) => {
+      console.error('Auto-updater error:', err)
+    })
 
     autoUpdater.on('update-available', (info) => {
       new Notification({ title: 'UpCheck update available', body: `v${info.version} is downloading...` }).show()
