@@ -22,7 +22,7 @@ Go to the [Releases](../../releases) page and download the installer for your pl
 - **Windows** - `UpCheck Setup x.x.x.exe`
 - **macOS** - `UpCheck-x.x.x-universal.dmg` (Intel + Apple Silicon)
 
-> Note: builds are unsigned. Windows may show a SmartScreen warning and macOS may require you to right-click the app and select Open the first time you run it.
+> Note: the macOS build is ad-hoc signed but not notarized. After downloading the DMG, macOS may block the app from opening. If that happens, go to **System Settings > Privacy & Security**, scroll down to the security section, and click **Open Anyway**. Windows may show a SmartScreen warning on first launch - click **More info** then **Run anyway**.
 
 ## Running from Source
 
