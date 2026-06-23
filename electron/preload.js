@@ -22,6 +22,9 @@ contextBridge.exposeInMainWorld('api', {
   getDismissedIncidents: ()          => ipcRenderer.invoke('get-dismissed-incidents'),
   dismissIncidents:      (incidents) => ipcRenderer.invoke('dismiss-incidents', incidents),
 
+  openUrl:     (url) => ipcRenderer.invoke('open-url', url),
+  triggerPoll: ()    => ipcRenderer.invoke('trigger-poll'),
+
   platform: process.platform,
 
   // frameless window on Windows means we draw our own title bar controls

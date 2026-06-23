@@ -14,6 +14,7 @@ export interface Incident {
 export interface ServiceStatus {
   id: string
   name: string
+  url: string
   indicator: StatusIndicator
   description: string
   responseTimeMs: number
@@ -43,6 +44,8 @@ declare global {
       removeService:  (id: string) => Promise<void>
       getDismissedIncidents: () => Promise<Record<string, string>>
       dismissIncidents: (incidents: { id: string; updatedAt: string }[]) => Promise<void>
+      openUrl:        (url: string) => void
+      triggerPoll:    () => Promise<void>
       platform:       string
       windowMinimize: () => void
       windowMaximize: () => void

@@ -38,7 +38,7 @@ function Row({ label, description, children }: { label: string; description?: st
     <div className="flex items-center justify-between gap-4 py-3 border-b border-white-6 last:border-0">
       <div className="min-w-0">
         <p className="text-[11px] text-white-75">{label}</p>
-        {description && <p className="text-[9px] text-white-25 mt-0.5 leading-relaxed">{description}</p>}
+        {description && <p className="text-[9px] text-white-45 mt-0.5 leading-relaxed">{description}</p>}
       </div>
       {children}
     </div>
@@ -92,7 +92,7 @@ export default function SettingsModal({ onClose }: SettingsModalProps) {
               <select
                 value={config.pollIntervalMs}
                 onChange={e => set('pollIntervalMs', Number(e.target.value))}
-                className="bg-white-5 border border-white-10 rounded-md text-[11px] text-white-70 px-2 py-1 cursor-pointer outline-none"
+                className="bg-white-5 border border-white-10 rounded-md text-[11px] text-white-70 px-2 py-1 cursor-pointer focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-[rgba(129,140,248,0.5)]"
               >
                 {POLL_OPTIONS.map(o => (
                   <option key={o.value} value={o.value}>{o.label}</option>
