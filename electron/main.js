@@ -29,23 +29,34 @@ let updateDownloadProgress = 0
 const previousIndicators = {}
 
 const DEFAULT_SERVICES = [
-  { id: 'claude',       name: 'Claude',       url: 'https://claudestatus.com'                      },
-  { id: 'windsurf',     name: 'Windsurf',     url: 'https://status.windsurf.com'                   },
-  { id: 'sentinelone',  name: 'SentinelOne',  url: 'https://status.sentinelone.com'                },
-  { id: 'slack',        name: 'Slack',        url: 'https://slack-status.com'                      },
-  { id: 'google-cloud', name: 'Google Cloud', url: 'https://status.cloud.google.com'               },
-  { id: 'intruder',     name: 'Intruder',     url: 'https://status.intruder.io'                    },
-  { id: 'apple',        name: 'Apple',        url: 'https://www.apple.com/support/systemstatus/'   },
-  { id: 'azure',        name: 'Azure',        url: 'https://status.azure.com'                      },
-  { id: 'opencve',      name: 'OpenCVE',      url: 'https://app.opencve.io'                        },
-  { id: 'github',       name: 'GitHub',       url: 'https://www.githubstatus.com'                  },
-  { id: 'openai',       name: 'OpenAI',       url: 'https://status.openai.com'                     },
+  { id: 'claude', name: 'Claude', url: 'https://status.claude.com' },
+  { id: 'windsurf', name: 'Windsurf', url: 'https://status.windsurf.com' },
+  { id: 'sentinelone', name: 'SentinelOne', url: 'https://status.sentinelone.com' },
+  { id: 'slack', name: 'Slack', url: 'https://slack-status.com' },
+  { id: 'google-cloud', name: 'Google Cloud', url: 'https://status.cloud.google.com' },
+  { id: 'intruder', name: 'Intruder', url: 'https://status.intruder.io' },
+  { id: 'apple', name: 'Apple', url: 'https://www.apple.com/support/systemstatus/' },
+  { id: 'azure', name: 'Azure', url: 'https://status.azure.com' },
+  { id: 'opencve', name: 'OpenCVE', url: 'https://app.opencve.io' },
+  { id: 'github', name: 'GitHub', url: 'https://www.githubstatus.com' },
+  { id: 'openai', name: 'OpenAI', url: 'https://status.openai.com' },
 ]
 
 if (!store.get('initializedV3')) {
   store.set('customServices', DEFAULT_SERVICES)
   store.set('history', {})
   store.set('initializedV3', true)
+  store.set('migratedClaudeUrl', true)
+}
+
+if (!store.get('migratedClaudeUrl')) {
+  const services = store.get('customServices', [])
+  store.set('customServices', services.map(s =>
+    s.id === 'claude' && s.url === 'https://claudestatus.com'
+      ? { ...s, url: 'https://status.claude.com' }
+      : s
+  ))
+  store.set('migratedClaudeUrl', true)
 }
 
 const historyBuffer = store.get('history', {})
