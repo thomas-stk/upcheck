@@ -431,6 +431,7 @@ app.whenReady().then(() => {
 
     autoUpdater.on('error', (err) => {
       console.error('Auto-updater error:', err)
+      new Notification({ title: 'UpCheck update error', body: err.message ?? 'Unknown error' }).show()
     })
 
     autoUpdater.on('update-available', (info) => {
