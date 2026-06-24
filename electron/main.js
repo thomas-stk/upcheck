@@ -159,15 +159,24 @@ function trayIcons() {
   return _trayIcons
 }
 
-// Tray menu and state
-
-const STATUS_EMOJI = {
-  operational: '🟢',
-  degraded:    '🟡',
-  outage:      '🔴',
-  unknown:     '⚪',
+let _dotIcons = null
+function dotIcons() {
+  if (!_dotIcons) {
+    const dir = isDev
+      ? path.join(__dirname, '../public/tray')
+      : path.join(__dirname, '../dist/tray')
+    const load = file => nativeImage.createFromPath(path.join(dir, file)).resize({ width: 12, height: 12 })
+    _dotIcons = {
+      operational: load('dot-operational_16.png'),
+      degraded:    load('dot-degraded_16.png'),
+      outage:      load('dot-outage_16.png'),
+      unknown:     load('dot-unknown_16.png'),
+    }
+  }
+  return _dotIcons
 }
 
+// Tray menu and state
 
 function buildTrayMenu() {
   const cap = s => s.charAt(0).toUpperCase() + s.slice(1)
@@ -176,7 +185,8 @@ function buildTrayMenu() {
   // to show read-only status info inside a native menu
   const serviceItems = latestStatuses.length > 0
     ? latestStatuses.map(s => ({
-        label:   `${STATUS_EMOJI[s.indicator] ?? '⚪'}  ${s.name}: ${cap(s.indicator)}`,
+        label:   `${s.name}: ${cap(s.indicator)}`,
+        icon:    dotIcons()[s.indicator] ?? dotIcons().unknown,
         enabled: false,
       }))
     : [{ label: 'Checking services…', enabled: false }]
