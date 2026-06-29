@@ -73,6 +73,9 @@
       ],
       "icon": "build/png/icon_256.png"
     },
+    "dmg": {
+      "background": "build/background.png"
+    },
     "nsis": {
       "oneClick": false,
       "allowToChangeInstallationDirectory": true
