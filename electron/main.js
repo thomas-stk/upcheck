@@ -1,4 +1,4 @@
-const { app, BrowserWindow, ipcMain, Tray, Menu, Notification, nativeImage, shell, dialog } = require('electron')
+const { app, BrowserWindow, ipcMain, Tray, Menu, MenuItem, Notification, nativeImage, shell, dialog } = require('electron')
 const path = require('path')
 const { startPoll, triggerPoll, fetchCustom } = require('./poller/index')
 const { worstStatus, buildTooltip } = require('./utils')
@@ -39,6 +39,7 @@ let tray
 let pollTimer
 let updateDownloaded = false
 let updateDownloadProgress = 0
+let updateChecking = false
 const previousIndicators = {}
 
 const DEFAULT_SERVICES = [
@@ -196,6 +197,10 @@ function buildTrayMenu() {
     updateItem = [{ label: 'Install Update & Restart', click: () => { app.isQuiting = true; autoUpdater.quitAndInstall() } }]
   } else if (updateDownloadProgress > 0 && updateDownloadProgress < 100) {
     updateItem = [{ label: `Downloading update... ${updateDownloadProgress}%`, enabled: false }]
+  } else if (updateChecking) {
+    updateItem = [{ label: 'Checking for updates...', enabled: false }]
+  } else {
+    updateItem = [{ label: 'Check for Updates', click: () => { updateChecking = true; refreshTray(); autoUpdater.checkForUpdates() } }]
   }
 
   return Menu.buildFromTemplate([
@@ -426,16 +431,40 @@ app.whenReady().then(() => {
   createWindow()
   createTray()
 
+  if (process.platform === 'darwin') {
+    const menu = Menu.getApplicationMenu()
+    if (menu?.items[0]?.submenu) {
+      const appSubmenu = menu.items[0].submenu
+      const afterAbout = appSubmenu.items.findIndex(i => i.type === 'separator')
+      const insertAt = afterAbout >= 0 ? afterAbout : 1
+      appSubmenu.insert(insertAt, new MenuItem({ type: 'separator' }))
+      appSubmenu.insert(insertAt, new MenuItem({
+        label: 'Check for Updates...',
+        click: () => { updateChecking = true; refreshTray(); autoUpdater.checkForUpdates() },
+      }))
+      Menu.setApplicationMenu(menu)
+    }
+  }
+
   if (!isDev) {
     autoUpdater.checkForUpdates()
 
     autoUpdater.on('error', (err) => {
+      updateChecking = false
+      refreshTray()
       console.error('Auto-updater error:', err)
       new Notification({ title: 'UpCheck update error', body: err.message ?? 'Unknown error' }).show()
     })
 
     autoUpdater.on('update-available', (info) => {
+      updateChecking = false
       new Notification({ title: 'UpCheck update available', body: `v${info.version} is downloading...` }).show()
+    })
+
+    autoUpdater.on('update-not-available', () => {
+      updateChecking = false
+      refreshTray()
+      new Notification({ title: 'UpCheck is up to date', body: `You're running the latest version.` }).show()
     })
 
     autoUpdater.on('download-progress', (progress) => {
