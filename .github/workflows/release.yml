@@ -44,8 +44,8 @@ jobs:
             --background "build/background.png" \
             --window-size 660 400 \
             --icon-size 80 \
-            --icon "UpCheck.app" 180 190 \
-            --app-drop-link 480 190 \
+            --icon "UpCheck.app" 180 160 \
+            --app-drop-link 480 160 \
             --no-internet-enable \
             "release/UpCheck-${VERSION}-universal.dmg" \
             "release/mac-universal/UpCheck.app"
