@@ -74,7 +74,15 @@
       "icon": "build/png/icon_256.png"
     },
     "dmg": {
-      "background": "build/background.png"
+      "background": "build/background.png",
+      "window": {
+        "width": 660,
+        "height": 400
+      },
+      "contents": [
+        { "x": 180, "y": 190, "type": "file" },
+        { "x": 480, "y": 190, "type": "link", "path": "/Applications" }
+      ]
     },
     "nsis": {
       "oneClick": false,
