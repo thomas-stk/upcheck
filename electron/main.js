@@ -1,4 +1,4 @@
-const { app, BrowserWindow, ipcMain, Tray, Menu, MenuItem, Notification, nativeImage, shell, dialog } = require('electron')
+const { app, BrowserWindow, ipcMain, Tray, Menu, Notification, nativeImage, shell, dialog } = require('electron')
 const path = require('path')
 const { startPoll, triggerPoll, fetchCustom } = require('./poller/index')
 const { worstStatus, buildTooltip } = require('./utils')
@@ -54,6 +54,7 @@ const DEFAULT_SERVICES = [
   { id: 'opencve', name: 'OpenCVE', url: 'https://app.opencve.io' },
   { id: 'github', name: 'GitHub', url: 'https://www.githubstatus.com' },
   { id: 'openai', name: 'OpenAI', url: 'https://status.openai.com' },
+  { id: 'aws', name: 'AWS', url: 'https://health.aws.amazon.com/health/status' },
 ]
 
 if (!store.get('initializedV3')) {
@@ -71,6 +72,17 @@ if (!store.get('migratedClaudeUrl')) {
       : s
   ))
   store.set('migratedClaudeUrl', true)
+}
+
+// One-time migration: add AWS to existing users' service lists.
+// The flag prevents this from running more than once per install.
+if (!store.get('migratedAddedAws')) {
+  const services = store.get('customServices', [])
+  // Skip if the user already added AWS manually
+  if (!services.some(s => s.id === 'aws' || s.url.replace(/\/$/, '') === 'https://health.aws.amazon.com/health/status')) {
+    store.set('customServices', [...services, { id: 'aws', name: 'AWS', url: 'https://health.aws.amazon.com/health/status' }])
+  }
+  store.set('migratedAddedAws', true)
 }
 
 const historyBuffer = store.get('history', {})
@@ -200,14 +212,19 @@ function buildTrayMenu() {
   } else if (updateChecking) {
     updateItem = [{ label: 'Checking for updates...', enabled: false }]
   } else {
-    updateItem = [{ label: 'Check for Updates', click: () => { updateChecking = true; refreshTray(); autoUpdater.checkForUpdates() } }]
+    updateItem = [{ label: 'Check for Updates', click: () => { if (isDev) return; updateChecking = true; refreshTray(); autoUpdater.checkForUpdates() } }]
   }
+
+  const githubItem = process.platform !== 'darwin'
+    ? [{ label: 'View on GitHub', click: () => shell.openExternal('https://github.com/thomas-stk/upcheck') }]
+    : []
 
   return Menu.buildFromTemplate([
     ...serviceItems,
     { type: 'separator' },
     { label: 'Open UpCheck', click: () => { mainWindow?.show(); mainWindow?.focus() } },
     ...updateItem,
+    ...githubItem,
     { type: 'separator' },
     { label: 'Quit', click: () => { app.isQuiting = true; app.quit() } },
   ])
@@ -432,18 +449,34 @@ app.whenReady().then(() => {
   createTray()
 
   if (process.platform === 'darwin') {
-    const menu = Menu.getApplicationMenu()
-    if (menu?.items[0]?.submenu) {
-      const appSubmenu = menu.items[0].submenu
-      const afterAbout = appSubmenu.items.findIndex(i => i.type === 'separator')
-      const insertAt = afterAbout >= 0 ? afterAbout : 1
-      appSubmenu.insert(insertAt, new MenuItem({ type: 'separator' }))
-      appSubmenu.insert(insertAt, new MenuItem({
-        label: 'Check for Updates...',
-        click: () => { updateChecking = true; refreshTray(); autoUpdater.checkForUpdates() },
-      }))
-      Menu.setApplicationMenu(menu)
-    }
+    const macMenu = Menu.buildFromTemplate([
+      {
+        label: app.getName(),
+        submenu: [
+          { role: 'about' },
+          { type: 'separator' },
+          { label: 'Check for Updates...', click: () => { if (isDev) return; updateChecking = true; refreshTray(); autoUpdater.checkForUpdates() } },
+          { type: 'separator' },
+          { role: 'services' },
+          { type: 'separator' },
+          { role: 'hide' },
+          { role: 'hideOthers' },
+          { role: 'unhide' },
+          { type: 'separator' },
+          { role: 'quit' },
+        ],
+      },
+      { role: 'editMenu' },
+      { role: 'viewMenu' },
+      { role: 'windowMenu' },
+      {
+        label: 'Help',
+        submenu: [
+          { label: 'View on GitHub', click: () => shell.openExternal('https://github.com/thomas-stk/upcheck') },
+        ],
+      },
+    ])
+    Menu.setApplicationMenu(macMenu)
   }
 
   if (!isDev) {
@@ -458,6 +491,7 @@ app.whenReady().then(() => {
 
     autoUpdater.on('update-available', (info) => {
       updateChecking = false
+      refreshTray()
       new Notification({ title: 'UpCheck update available', body: `v${info.version} is downloading...` }).show()
     })
 
