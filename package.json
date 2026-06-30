@@ -54,7 +54,7 @@
       "identity": "-",
       "target": [
         {
-          "target": "dmg",
+          "target": "dir",
           "arch": [
             "universal"
           ]
