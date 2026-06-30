@@ -216,7 +216,7 @@ function buildTrayMenu() {
   }
 
   const githubItem = process.platform !== 'darwin'
-    ? [{ label: 'View on GitHub', click: () => shell.openExternal('https://github.com/thomas-stk/upcheck') }]
+    ? [{ label: 'GitHub', click: () => shell.openExternal('https://github.com/thomas-stk/upcheck') }]
     : []
 
   return Menu.buildFromTemplate([
@@ -472,7 +472,7 @@ app.whenReady().then(() => {
       {
         label: 'Help',
         submenu: [
-          { label: 'View on GitHub', click: () => shell.openExternal('https://github.com/thomas-stk/upcheck') },
+          { label: 'GitHub', click: () => shell.openExternal('https://github.com/thomas-stk/upcheck') },
         ],
       },
     ])
