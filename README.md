@@ -2,6 +2,8 @@
 
 A lightweight cross-platform desktop app for monitoring the real-time status of your most important services. UpCheck sits in your system tray, polls services every minute, and sends a desktop notification the moment something goes down.
 
+<img width="2624" height="1784" alt="image" src="https://github.com/user-attachments/assets/3695b222-3b64-4ffe-94e5-1d8c9cc57309" />
+
 ![Platform](https://img.shields.io/badge/platform-Windows%20%7C%20macOS-blue)
 ![License](https://img.shields.io/badge/license-AGPL--3.0-green)
 
