@@ -9,6 +9,7 @@ When committing changes:
 2. Write a single concise commit message line that summarizes what changed (not why, just what -- e.g. "add login form validation" or "fix null pointer in user service").
 3. Run `gacp "<message>"` to stage all files, commit, and push to origin in one step.
 4. Report back the commit message used and confirm it pushed successfully.
+5. Invoke the `pr-description` skill to create a PR for the changes.
 
 Rules:
 - The commit message must be one line only -- no body, no bullet points.
