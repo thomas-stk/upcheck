@@ -9,7 +9,7 @@ A lightweight cross-platform desktop app for monitoring the real-time status of 
 
 ## Features
 
-- Monitors 11 services out of the box: Claude, Windsurf, SentinelOne, Slack, Google Cloud, Intruder, Apple, Azure, OpenCVE, GitHub, OpenAI
+- Monitors 12 services out of the box: Claude, Windsurf, SentinelOne, Slack, Google Cloud, Intruder, Apple, Azure, OpenCVE, GitHub, OpenAI, AWS
 - Add or remove any service via custom URL
 - Removals persist across restarts
 - Desktop notifications when a service changes status
@@ -102,6 +102,7 @@ Open settings via the gear icon in the sidebar.
 | OpenCVE | app.opencve.io |
 | GitHub | githubstatus.com |
 | OpenAI | status.openai.com |
+| AWS | health.aws.amazon.com |
 
 You can remove any of these and add your own. Changes persist across restarts.
 
