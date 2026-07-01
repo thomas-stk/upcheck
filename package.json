@@ -50,6 +50,9 @@
       "dist/**/*",
       "electron/**/*"
     ],
+    "extraResources": [
+      { "from": "build/app-update.yml", "to": "app-update.yml" }
+    ],
     "mac": {
       "identity": "-",
       "target": [

@@ -1,0 +1,4 @@
+provider: github
+owner: thomas-stk
+repo: upcheck
+updaterCacheDirName: upcheck-updater
