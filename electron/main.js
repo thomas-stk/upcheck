@@ -23,6 +23,7 @@ if (!gotLock) {
   app.on('second-instance', () => {
     if (mainWindow) {
       if (mainWindow.isMinimized()) mainWindow.restore()
+      app.dock?.show()
       mainWindow.show()
       mainWindow.focus()
     }
@@ -222,7 +223,7 @@ function buildTrayMenu() {
   return Menu.buildFromTemplate([
     ...serviceItems,
     { type: 'separator' },
-    { label: 'Open UpCheck', click: () => { mainWindow?.show(); mainWindow?.focus() } },
+    { label: 'Open UpCheck', click: () => { app.dock?.show(); mainWindow?.show(); mainWindow?.focus() } },
     ...updateItem,
     ...githubItem,
     { type: 'separator' },
@@ -289,7 +290,9 @@ function createTray() {
     tray.on('click', () => {
       if (mainWindow?.isVisible()) {
         mainWindow.hide()
+        app.dock?.hide()
       } else {
+        app.dock?.show()
         mainWindow?.show()
         mainWindow?.focus()
       }
@@ -329,6 +332,7 @@ function createWindow() {
     if (getConfig().minimizeToTray && !app.isQuiting) {
       event.preventDefault()
       mainWindow.hide()
+      app.dock?.hide()
     }
   })
 
