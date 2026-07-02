@@ -205,7 +205,7 @@ function buildTrayMenu() {
       }))
     : [{ label: 'Checking services…', enabled: false }]
 
-  let updateItem = []
+  let updateItem
   if (updateDownloaded) {
     updateItem = [{ label: 'Install Update & Restart', click: () => { app.isQuiting = true; autoUpdater.quitAndInstall() } }]
   } else if (updateDownloadProgress > 0 && updateDownloadProgress < 100) {
