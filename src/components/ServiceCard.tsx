@@ -41,6 +41,7 @@ export default function ServiceCard({ service, editMode, onRemove, onClick }: Se
   const [confirming, setConfirming] = useState(false)
 
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect -- cheap reset, extra render is negligible here
     if (!editMode) setConfirming(false)
   }, [editMode])
 
