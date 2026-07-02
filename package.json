@@ -12,7 +12,8 @@
     "dist": "npm run build && electron-builder",
     "dist:win": "npm run build && electron-builder --win --publish never",
     "dist:mac": "npm run build && electron-builder --mac --publish never",
-    "test": "vitest run"
+    "test": "vitest run",
+    "lint": "eslint ."
   },
   "dependencies": {
     "@tabler/icons-react": "^3.44.0",
@@ -22,6 +23,7 @@
     "react-dom": "^18.3.1"
   },
   "devDependencies": {
+    "@eslint/js": "^10.0.1",
     "@tailwindcss/vite": "^4.1.7",
     "@types/react": "^18.3.12",
     "@types/react-dom": "^18.3.1",
@@ -29,8 +31,13 @@
     "concurrently": "^9.1.2",
     "electron": "^33.3.1",
     "electron-builder": "^25.1.8",
+    "eslint": "^10.6.0",
+    "eslint-plugin-react-hooks": "^7.1.1",
+    "eslint-plugin-react-refresh": "^0.5.3",
+    "globals": "^17.7.0",
     "tailwindcss": "^4.1.7",
     "typescript": "^5.6.3",
+    "typescript-eslint": "^8.62.1",
     "vite": "^6.0.3",
     "vitest": "^4.1.9",
     "wait-on": "^8.0.1"
@@ -51,7 +58,10 @@
       "electron/**/*"
     ],
     "extraResources": [
-      { "from": "build/app-update.yml", "to": "app-update.yml" }
+      {
+        "from": "build/app-update.yml",
+        "to": "app-update.yml"
+      }
     ],
     "mac": {
       "identity": "-",
@@ -83,8 +93,17 @@
         "height": 400
       },
       "contents": [
-        { "x": 180, "y": 140, "type": "file" },
-        { "x": 480, "y": 140, "type": "link", "path": "/Applications" }
+        {
+          "x": 180,
+          "y": 140,
+          "type": "file"
+        },
+        {
+          "x": 480,
+          "y": 140,
+          "type": "link",
+          "path": "/Applications"
+        }
       ]
     },
     "nsis": {

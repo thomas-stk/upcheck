@@ -24,8 +24,8 @@ export default function AddServiceModal({ onClose }: AddServiceModalProps) {
     try {
       await addService(sName, sUrl)
       onClose()
-    } catch (err: any) {
-      const msg = err?.message ?? ''
+    } catch (err) {
+      const msg = err instanceof Error ? err.message : ''
       setError(msg.includes('already') ? `${sName} has already been added.` : `Could not reach ${sName}. Try again.`)
       setLoading(false)
     }
@@ -40,8 +40,8 @@ export default function AddServiceModal({ onClose }: AddServiceModalProps) {
     try {
       await addService(name.trim(), normalized)
       onClose()
-    } catch (err: any) {
-      const msg = err?.message ?? ''
+    } catch (err) {
+      const msg = err instanceof Error ? err.message : ''
       setError(msg.includes('already') ? 'This service has already been added.' : 'Could not reach that URL. Check it and try again.')
       setLoading(false)
     }
