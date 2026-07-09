@@ -6,3 +6,4 @@ dist-electron/
 .claude/settings.local.json
 .claude/agent-memory/
 .impeccable/
+.claude/
