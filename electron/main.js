@@ -223,7 +223,7 @@ function buildTrayMenu() {
   return Menu.buildFromTemplate([
     ...serviceItems,
     { type: 'separator' },
-    { label: 'Open UpCheck', click: () => { app.dock?.show(); mainWindow?.show(); mainWindow?.focus() } },
+    { label: 'Open UpCheck', click: () => { if (!mainWindow) { createWindow() } app.dock?.show(); mainWindow?.show(); mainWindow?.focus() } },
     ...updateItem,
     ...githubItem,
     { type: 'separator' },
@@ -334,6 +334,10 @@ function createWindow() {
       mainWindow.hide()
       app.dock?.hide()
     }
+  })
+
+  mainWindow.on('closed', () => {
+    mainWindow = null
   })
 
   if (!isDev) {
