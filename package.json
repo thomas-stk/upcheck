@@ -71,6 +71,12 @@
           "arch": [
             "universal"
           ]
+        },
+        {
+          "target": "zip",
+          "arch": [
+            "universal"
+          ]
         }
       ],
       "icon": "build/png/icon_1024.png"
@@ -84,10 +90,11 @@
           ]
         }
       ],
-      "icon": "build/png/icon_256.png"
+      "icon": "build/png/icon_256.png",
+      "artifactName": "${productName}-Setup-${version}.${ext}"
     },
     "dmg": {
-      "background": "build/background.png",
+      "background": "build/upcheck-dmg-background-660x400.png",
       "window": {
         "width": 660,
         "height": 400
