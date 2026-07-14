@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'
 import { IconX } from '@tabler/icons-react'
-import { getConfig, saveConfig } from '../services/ipc'
+import { getConfig, saveConfig, getAppVersion } from '../services/ipc'
 import type { AppConfig } from '../types/index'
 
 interface SettingsModalProps {
@@ -47,9 +47,11 @@ function Row({ label, description, children }: { label: string; description?: st
 
 export default function SettingsModal({ onClose }: SettingsModalProps) {
   const [config, setConfig] = useState<AppConfig | null>(null)
+  const [version, setVersion] = useState<string | null>(null)
 
   useEffect(() => {
     getConfig().then(setConfig)
+    getAppVersion().then(setVersion)
   }, [])
 
   async function set<K extends keyof AppConfig>(key: K, value: AppConfig[K]) {
@@ -79,7 +81,7 @@ export default function SettingsModal({ onClose }: SettingsModalProps) {
           <p className="text-[10px] text-white-25 py-4 text-center">Loading...</p>
         ) : (
           <div>
-            <p className="text-[9px] tracking-[0.07em] uppercase text-white-20 mb-1">General</p>
+            <p className="text-[9px] tracking-[0.07em] uppercase text-white-30 mb-1">General</p>
 
             <Row label="Notifications" description="Alert when a service changes status">
               <Toggle
@@ -100,7 +102,7 @@ export default function SettingsModal({ onClose }: SettingsModalProps) {
               </select>
             </Row>
 
-            <p className="text-[9px] tracking-[0.07em] uppercase text-white-20 mt-3 mb-1">Window</p>
+            <p className="text-[9px] tracking-[0.07em] uppercase text-white-30 mt-3 mb-1">Window</p>
 
             <Row label="Launch at startup" description="Start UpCheck when you log in">
               <Toggle
@@ -115,6 +117,10 @@ export default function SettingsModal({ onClose }: SettingsModalProps) {
                 onChange={v => set('minimizeToTray', v)}
               />
             </Row>
+
+            {version && (
+              <p className="text-[9px] text-white-50 text-center mt-3">UpCheck v{version}</p>
+            )}
           </div>
         )}
       </div>
