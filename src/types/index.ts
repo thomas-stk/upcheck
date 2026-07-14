@@ -36,20 +36,21 @@ export interface AppConfig {
 declare global {
   interface Window {
     api: {
-      getStatuses:    () => Promise<ServiceStatus[]>
-      getConfig:      () => Promise<AppConfig>
-      saveConfig:     (config: Partial<AppConfig>) => Promise<void>
+      getStatuses: () => Promise<ServiceStatus[]>
+      getConfig: () => Promise<AppConfig>
+      saveConfig: (config: Partial<AppConfig>) => Promise<void>
+      getAppVersion: () => Promise<string>
       onStatusUpdate: (callback: (data: ServiceStatus[]) => void) => (() => void)
-      addService:     (name: string, url: string) => Promise<{ success: boolean; checkType: string }>
-      removeService:  (id: string) => Promise<void>
+      addService: (name: string, url: string) => Promise<{ success: boolean; checkType: string }>
+      removeService: (id: string) => Promise<void>
       getDismissedIncidents: () => Promise<Record<string, string>>
       dismissIncidents: (incidents: { id: string; updatedAt: string }[]) => Promise<void>
-      openUrl:        (url: string) => void
-      triggerPoll:    () => Promise<void>
-      platform:       string
+      openUrl: (url: string) => void
+      triggerPoll: () => Promise<void>
+      platform: string
       windowMinimize: () => void
       windowMaximize: () => void
-      windowClose:    () => void
+      windowClose:() => void
     }
   }
 }

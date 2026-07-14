@@ -7,6 +7,7 @@ contextBridge.exposeInMainWorld('api', {
   getStatuses: () => ipcRenderer.invoke('get-statuses'),
   getConfig:   () => ipcRenderer.invoke('get-config'),
   saveConfig:  (config) => ipcRenderer.invoke('save-config', config),
+  getAppVersion: () => ipcRenderer.invoke('get-app-version'),
 
   // the renderer passes a callback, main fires it after every poll.
   // _event is the raw IPC event object, not useful here so it gets dropped.

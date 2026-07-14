@@ -373,6 +373,7 @@ app.whenReady().then(() => {
 
   ipcMain.handle('get-statuses',  () => latestStatuses)
   ipcMain.handle('get-config',    () => getConfig())
+  ipcMain.handle('get-app-version', () => app.getVersion())
   ipcMain.handle('trigger-poll',  () => triggerPoll(handlePollResults, () => store.get('customServices', [])))
   ipcMain.handle('open-url', (_event, url) => {
     if (typeof url === 'string' && /^https?:\/\//i.test(url)) shell.openExternal(url)
