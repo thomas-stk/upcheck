@@ -505,9 +505,12 @@ app.whenReady().then(() => {
     })
 
     autoUpdater.on('update-not-available', () => {
+      const wasManual = updateChecking
       updateChecking = false
       refreshTray()
-      new Notification({ title: 'UpCheck is up to date', body: `You're running the latest version.` }).show()
+      if (wasManual) {
+        new Notification({ title: 'UpCheck is up to date', body: `You're running the latest version.` }).show()
+      }
     })
 
     autoUpdater.on('download-progress', (progress) => {
@@ -534,6 +537,10 @@ app.whenReady().then(() => {
         }
       })
     })
+
+    setInterval(() => {
+      autoUpdater.checkForUpdates()
+    }, 4 * 60 * 60 * 1000)
   }
 
   pollTimer = startPoll(
