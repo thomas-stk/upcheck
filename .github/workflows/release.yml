@@ -41,7 +41,7 @@ jobs:
           VERSION=$(node -p "require('./package.json').version")
           create-dmg \
             --volname "UpCheck" \
-            --background "build/background.png" \
+            --background "build/upcheck-dmg-background-660x400.png" \
             --window-size 660 400 \
             --icon-size 80 \
             --icon "UpCheck.app" 180 140 \
@@ -49,23 +49,9 @@ jobs:
             --no-internet-enable \
             "release/UpCheck-${VERSION}-universal.dmg" \
             "release/mac-universal/UpCheck.app"
-      - name: Generate latest-mac.yml
-        run: |
-          python3 - << 'EOF'
-          import base64, hashlib, json, os
-          from datetime import datetime, timezone
-          version = json.load(open('package.json'))['version']
-          dmg_name = f'UpCheck-{version}-universal.dmg'
-          dmg_path = f'release/{dmg_name}'
-          data = open(dmg_path, 'rb').read()
-          sha512 = base64.b64encode(hashlib.sha512(data).digest()).decode()
-          size = os.path.getsize(dmg_path)
-          date = datetime.now(timezone.utc).strftime('%Y-%m-%dT%H:%M:%S.000Z')
-          content = f"version: {version}\nfiles:\n  - url: {dmg_name}\n    sha512: {sha512}\n    size: {size}\npath: {dmg_name}\nsha512: {sha512}\nreleaseDate: '{date}'\n"
-          open('release/latest-mac.yml', 'w').write(content)
-          EOF
       - uses: softprops/action-gh-release@3bb12739c298aeb8a4eeaf626c5b8d85266b0e65
         with:
           files: |
             release/*.dmg
+            release/*.zip
             release/latest-mac.yml
