@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.5.2](https://github.com/thomas-stk/upcheck/compare/v1.5.1...v1.5.2) (2026-07-15)
+
+
+### Bug Fixes
+
+* **UC-26:** fix dropdown theming, dmg background, and release draft race ([e42c3fb](https://github.com/thomas-stk/upcheck/commit/e42c3fbc00aca5e2bf28ac9470a5a7e72d9bcd50))
+
 ## [1.5.1](https://github.com/thomas-stk/upcheck/compare/v1.5.0...v1.5.1) (2026-07-15)
 
 
