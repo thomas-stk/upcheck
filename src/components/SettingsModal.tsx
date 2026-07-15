@@ -94,10 +94,13 @@ export default function SettingsModal({ onClose }: SettingsModalProps) {
               <select
                 value={config.pollIntervalMs}
                 onChange={e => set('pollIntervalMs', Number(e.target.value))}
+                style={{ colorScheme: 'dark' }}
                 className="bg-white-5 border border-white-10 rounded-md text-[11px] text-white-70 px-2 py-1 cursor-pointer focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-[rgba(129,140,248,0.5)]"
               >
                 {POLL_OPTIONS.map(o => (
-                  <option key={o.value} value={o.value}>{o.label}</option>
+                  <option key={o.value} value={o.value} style={{ backgroundColor: '#16181e', color: 'rgba(255,255,255,0.85)' }}>
+                    {o.label}
+                  </option>
                 ))}
               </select>
             </Row>
