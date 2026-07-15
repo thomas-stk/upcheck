@@ -12,6 +12,13 @@ const { autoUpdater } = require('electron-updater')
 autoUpdater.autoDownload = process.platform !== 'darwin'
 const RELEASES_URL = 'https://github.com/thomas-stk/upcheck/releases/latest'
 
+// Mac installs are a manual drag-to-Applications replace, which macOS refuses
+// while the app is still running, so quit once the user heads to go get it.
+function openReleasesPageAndQuit() {
+  app.isQuiting = true
+  shell.openExternal(RELEASES_URL).finally(() => app.quit())
+}
+
 const store = new Store()
 
 const defaultConfig = {
@@ -225,7 +232,7 @@ function buildTrayMenu() {
   } else if (updateChecking) {
     updateItem = [{ label: 'Checking for updates...', enabled: false }]
   } else if (updateAvailableVersion) {
-    updateItem = [{ label: `Update v${updateAvailableVersion} Available`, click: () => shell.openExternal(RELEASES_URL) }]
+    updateItem = [{ label: `Update v${updateAvailableVersion} Available`, click: () => openReleasesPageAndQuit() }]
   } else {
     updateItem = [{ label: 'Check for Updates', click: () => { if (isDev) return; updateChecking = true; refreshTray(); autoUpdater.checkForUpdates() } }]
   }
@@ -531,7 +538,7 @@ app.whenReady().then(() => {
         }).then(({ response }) => {
           updateDialogOpen = false
           if (response === 0) {
-            shell.openExternal(RELEASES_URL)
+            openReleasesPageAndQuit()
           }
         }).catch(() => { updateDialogOpen = false })
       } else {
