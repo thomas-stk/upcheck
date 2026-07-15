@@ -94,7 +94,7 @@
       "artifactName": "${productName}-Setup-${version}.${ext}"
     },
     "dmg": {
-      "background": "build/upcheck-dmg-background-660x400.png",
+      "background": "build/background.png",
       "window": {
         "width": 660,
         "height": 400

@@ -21,6 +21,7 @@ jobs:
       - run: npm run dist:win
       - uses: softprops/action-gh-release@3bb12739c298aeb8a4eeaf626c5b8d85266b0e65
         with:
+          draft: true
           files: |
             release/*.exe
             release/latest.yml
@@ -41,7 +42,7 @@ jobs:
           VERSION=$(node -p "require('./package.json').version")
           create-dmg \
             --volname "UpCheck" \
-            --background "build/upcheck-dmg-background-660x400.png" \
+            --background "build/background.png" \
             --window-size 660 400 \
             --icon-size 80 \
             --icon "UpCheck.app" 180 140 \
@@ -51,7 +52,16 @@ jobs:
             "release/mac-universal/UpCheck.app"
       - uses: softprops/action-gh-release@3bb12739c298aeb8a4eeaf626c5b8d85266b0e65
         with:
+          draft: true
           files: |
             release/*.dmg
             release/*.zip
             release/latest-mac.yml
+
+  publish-release:
+    needs: [build-windows, build-mac]
+    runs-on: ubuntu-latest
+    steps:
+      - env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: gh release edit ${{ github.ref_name }} --draft=false --repo ${{ github.repository }}
