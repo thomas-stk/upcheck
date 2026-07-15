@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.5.4](https://github.com/thomas-stk/upcheck/compare/v1.5.3...v1.5.4) (2026-07-15)
+
+
+### Bug Fixes
+
+* **UC-31:** fix mac dmg retina background and stale finder cache ([8d2f9c9](https://github.com/thomas-stk/upcheck/commit/8d2f9c9f4462cd917052a09448479ab9205bb33e))
+* **UC-32:** swap autorelease label after tagging to unblock release PRs ([52029e3](https://github.com/thomas-stk/upcheck/commit/52029e37a26ee9a6bc97e7aff0f68bbf75316860))
+
 ## [1.5.3](https://github.com/thomas-stk/upcheck/compare/v1.5.2...v1.5.3) (2026-07-15)
 
 
