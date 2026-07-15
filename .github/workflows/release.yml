@@ -40,9 +40,10 @@ jobs:
         run: |
           brew install create-dmg
           VERSION=$(node -p "require('./package.json').version")
+          tiffutil -cathidpicheck build/background.png build/background@2x.png -out build/background.tiff
           create-dmg \
-            --volname "UpCheck" \
-            --background "build/background.png" \
+            --volname "UpCheck ${VERSION}" \
+            --background "build/background.tiff" \
             --window-size 660 400 \
             --icon-size 80 \
             --icon "UpCheck.app" 180 140 \
