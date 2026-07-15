@@ -5,6 +5,13 @@ const { worstStatus, buildTooltip } = require('./utils')
 const Store = require('electron-store')
 const { autoUpdater } = require('electron-updater')
 
+// Mac auto-install requires a paid Apple Developer ID signature (Squirrel.Mac),
+// which this app doesn't have, so downloading an update we can't install just
+// wastes bandwidth and ends in a confusing signature error. Point Mac users to
+// the release page for a manual install instead of attempting one.
+autoUpdater.autoDownload = process.platform !== 'darwin'
+const RELEASES_URL = 'https://github.com/thomas-stk/upcheck/releases/latest'
+
 const store = new Store()
 
 const defaultConfig = {
@@ -37,6 +44,11 @@ if (process.platform === 'win32') app.setAppUserModelId('com.upcheck.app')
 let latestStatuses = []
 let mainWindow
 let tray
+// Mac only: tracks a detected-but-not-yet-installed update so the tray menu
+// keeps surfacing it after the user dismisses the dialog, and so overlapping
+// checks (manual + periodic) don't stack duplicate dialogs.
+let updateAvailableVersion = null
+let updateDialogOpen = false
 let pollTimer
 let updateDownloaded = false
 let updateDownloadProgress = 0
@@ -212,6 +224,8 @@ function buildTrayMenu() {
     updateItem = [{ label: `Downloading update... ${updateDownloadProgress}%`, enabled: false }]
   } else if (updateChecking) {
     updateItem = [{ label: 'Checking for updates...', enabled: false }]
+  } else if (updateAvailableVersion) {
+    updateItem = [{ label: `Update v${updateAvailableVersion} Available`, click: () => shell.openExternal(RELEASES_URL) }]
   } else {
     updateItem = [{ label: 'Check for Updates', click: () => { if (isDev) return; updateChecking = true; refreshTray(); autoUpdater.checkForUpdates() } }]
   }
@@ -500,13 +514,36 @@ app.whenReady().then(() => {
 
     autoUpdater.on('update-available', (info) => {
       updateChecking = false
-      refreshTray()
-      new Notification({ title: 'UpCheck update available', body: `v${info.version} is downloading...` }).show()
+      if (process.platform === 'darwin') {
+        updateAvailableVersion = info.version
+        refreshTray()
+        if (updateDialogOpen) return
+        updateDialogOpen = true
+        app.dock?.show()
+        dialog.showMessageBox(mainWindow ?? undefined, {
+          type: 'info',
+          title: 'Update Available',
+          message: `UpCheck v${info.version} is available.`,
+          detail: "Automatic install isn't available on Mac. Download the new version from the releases page and drag it into Applications, the same way you installed UpCheck.",
+          buttons: ['Open Releases Page', 'Later'],
+          defaultId: 0,
+          cancelId: 1,
+        }).then(({ response }) => {
+          updateDialogOpen = false
+          if (response === 0) {
+            shell.openExternal(RELEASES_URL)
+          }
+        }).catch(() => { updateDialogOpen = false })
+      } else {
+        refreshTray()
+        new Notification({ title: 'UpCheck update available', body: `v${info.version} is downloading...` }).show()
+      }
     })
 
     autoUpdater.on('update-not-available', () => {
       const wasManual = updateChecking
       updateChecking = false
+      updateAvailableVersion = null
       refreshTray()
       if (wasManual) {
         new Notification({ title: 'UpCheck is up to date', body: `You're running the latest version.` }).show()
