@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.5.1](https://github.com/thomas-stk/upcheck/compare/v1.5.0...v1.5.1) (2026-07-15)
+
+
+### Bug Fixes
+
+* **UC-25:** switch Mac auto-update to manual release-page install ([7f21c66](https://github.com/thomas-stk/upcheck/commit/7f21c663a718ca80e437c4ec694477113ff73c40))
+
 ## [1.5.0](https://github.com/thomas-stk/upcheck/compare/v1.4.0...v1.5.0) (2026-07-14)
 
 
