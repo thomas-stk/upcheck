@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.5.3](https://github.com/thomas-stk/upcheck/compare/v1.5.2...v1.5.3) (2026-07-15)
+
+
+### Bug Fixes
+
+* **UC-28:** restore release confirmation comment on merged PR ([9e5c956](https://github.com/thomas-stk/upcheck/commit/9e5c9566e22c49223c2ba43dc5179bbae52e4e16))
+* **UC-29:** quit app before opening releases page for mac update ([e17cf40](https://github.com/thomas-stk/upcheck/commit/e17cf40217316765d0dd5ed81c80c904321a3af4))
+
 ## [1.5.2](https://github.com/thomas-stk/upcheck/compare/v1.5.1...v1.5.2) (2026-07-15)
 
 
