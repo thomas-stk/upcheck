@@ -35,6 +35,7 @@ jobs:
             PR_NUMBER=$(gh api "repos/${{ github.repository }}/commits/$GITHUB_SHA/pulls" --jq '.[0].number')
             if [ -n "$PR_NUMBER" ]; then
               gh pr comment "$PR_NUMBER" --body ":rocket: Released as [v$V](https://github.com/${{ github.repository }}/releases/tag/v$V) (draft until installers finish building)."
-              gh pr edit "$PR_NUMBER" --remove-label "autorelease: pending" --add-label "autorelease: tagged" || true
+              gh api "repos/${{ github.repository }}/issues/$PR_NUMBER/labels" -f "labels[]=autorelease: tagged" >/dev/null
+              gh api -X DELETE "repos/${{ github.repository }}/issues/$PR_NUMBER/labels/autorelease%3A%20pending" >/dev/null 2>&1 || true
             fi
           fi
