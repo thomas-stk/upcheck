@@ -1,5 +1,15 @@
 # Changelog
 
+## [1.5.5](https://github.com/thomas-stk/upcheck/compare/v1.5.4...v1.5.5) (2026-07-16)
+
+
+### Bug Fixes
+
+* **UC-33:** increase text size in dmg retina background ([9ce5ca0](https://github.com/thomas-stk/upcheck/commit/9ce5ca03f6e05bda7ff811acf79a04e094ea0ac8))
+* **UC-33:** increase text size in dmg retina background ([6ae068e](https://github.com/thomas-stk/upcheck/commit/6ae068e3f4d0715c4a3c39f95c9268aa328f26b4))
+* **UC-34:** use REST API instead of GraphQL for autorelease label swap ([3f09f7b](https://github.com/thomas-stk/upcheck/commit/3f09f7bd0dd86a2af81e6c93ef75445f82634803))
+* **UC-34:** use REST API instead of GraphQL for autorelease label swap ([8ba6a1a](https://github.com/thomas-stk/upcheck/commit/8ba6a1ac362db90bbf50b2a541cbe9ee7d93e6b6))
+
 ## [1.5.4](https://github.com/thomas-stk/upcheck/compare/v1.5.3...v1.5.4) (2026-07-15)
 
 
